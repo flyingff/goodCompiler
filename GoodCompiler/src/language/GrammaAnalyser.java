@@ -1,11 +1,12 @@
 package language;
 
-import java.awt.event.ItemEvent;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -37,15 +38,18 @@ public class GrammaAnalyser {
 			 map.put(left, xset);
 		}
 		//System.out.println(map.toString());
-		ProSetFamily(map);
+		Set<Item> sItems = itemSetFamily(map);
+		//System.out.println(sItems.toString());
+		Map<Group, Integer> mGotos = automat(sItems);
+		//System.out.println(mGotos.toString());
+		
 	}
 	public static void main(String[] args) {
 		GrammaAnalyser ga = new GrammaAnalyser(GrammaAnalyser.class.getResourceAsStream("gramma.properties"));
 	}
-	public void ProSetFamily(Map<String, Set<Production>> map){
+	public Set<Item> itemSetFamily(Map<String, Set<Production>> map){
 		Set<Item> psset = new HashSet<Item>();
 		for(Entry<String, Set<Production>> ex : map.entrySet()){
-			String left = ex.getKey();
 			for(Production px : ex.getValue()){
 				int pos = 0;
 				int len = px.getRight().length;
@@ -58,52 +62,141 @@ public class GrammaAnalyser {
 				}
 			}
 		}
-		System.out.println(psset.toString());
+		//System.out.println(psset.toString());
+		return psset;
 	}
-	public void automat(Set<Item> psset){
-		Map<Integer, Set<Item> > itemfamily = new HashMap<Integer, Set<Item>>();
-		Set<Goto> gotoset = new HashSet<Goto>();
-		int index = 0;
+	//得到GOTO转换表
+	private List<Set<Item>> itemfamily = new ArrayList<>();
+	private Set<String> vnset = new HashSet<>();
+	public Map<Group, Integer> automat(Set<Item> psset){
 		
+		Map<Group, Integer> gotomap =new HashMap<Group, Integer>();
+		
+		Set<Item> begin = new HashSet<Item>();
 		for(Item psx : psset){
-			if(psx.getPd().getLeft() == "start" && psx.getDotPos() == 0){
-				Set<Item> begin = new HashSet<Item>();
-				begin.add(psx);
-				String prefix = psx.getPd().getRight()[0];
-				begin = getItemFamily(psset, prefix);
-				itemfamily.put(index++, begin);
+			if(psx.getPd().getLeft().equals( "start") && psx.getDotPos() == 0){
+				Set<Item> addItems =new HashSet<Item>();
+				addItems.add(psx);
+				while(begin.addAll(addItems)){
+					for(Item x : begin){
+						
+						String left = x.getPd().getLeft();
+						if(x.getDotPos()<x.getPd().getRight().length)
+							{String string = x.getPd().getRight()[x.getDotPos()];
+							System.out.println("pre:" + string);
+							System.out.println(getItemFamily(psset,left, string));
+							addItems.addAll(getItemFamily(psset,left, string));
+						}
+					}
 				}
 			}
-		for(Entry<Integer, Set<Item>> x : itemfamily.entrySet()){
-			
 		}
-		
+		itemfamily.add(begin);
+		System.out.println("begin: " +begin);
+		for(int i =0 ; i <itemfamily.size(); i++){
+			int from = i;
+			for(Item ix : itemfamily.get(i)){
+				if(ix.getDotPos() != ix.getPd().getRight().length) {
+					String left = ix.getPd().getLeft();
+					String prefix = ix.getPd().getRight()[ix.getDotPos()];
+					Set<Item> to = getItemFamily(psset,left, prefix);
+					if(!itemfamily.contains(to)){
+						itemfamily.add(to);
+						gotomap.put(new Group(from, prefix), itemfamily.size());
+					} else {
+						int ito = getKey(itemfamily, to);
+							gotomap.put(new Group(from, prefix), ito);
+						}
+					}
+					
+				}
+			}
+		for(int i = 0; i < itemfamily.size(); i++){
+			//System.out.println( " index :" + i + ", itemset: " + itemfamily.get(i).toString());
 		}
-	public  Set<Item> getItemFamily(Set<Item> psset, String prefix){
+		return gotomap;
+		}
+	
+	//得到项目集
+	public  Set<Item> getItemFamily(Set<Item> psset, String left, String prefix){
 		Set<Item> set = new HashSet<Item>();
 		for(Item ps : psset){
 			if(ps.getPd().getLeft().equals(prefix) && ps.getDotPos() == 0){
 				set.add(ps);
 			}
-			if(((ps.getDotPos() < ps.getPd().getRight().length) && ps.getDotPos() > 0) &&
-					ps.getPd().getRight()[ps.getDotPos()].equals(prefix)){
+			if(((ps.getDotPos() <= ps.getPd().getRight().length) && ps.getDotPos() > 0) &&
+				ps.getPd().getLeft().equals(left) && ps.getPd().getRight()[ps.getDotPos() - 1].equals(prefix)){
 				set.add(ps);
 			}
 		}
 		return set;
+	} 
+	//由项目集获得编号
+	private int getKey(List<Set<Item> > itemfamily, Set<Item> si){
+		int key = 0;
+		for( int i = 0; i < itemfamily.size(); i++){
+			if(itemfamily.get(i).equals(si)){
+				key = i;
+			}
+		}
+		return key;
 	}
 }
 
-class Goto{
+//GOTO转换表
+class Group{
 	private int from;
 	private String via;
-	private int to;
+	public int getFrom() {
+		return from;
+	}
+	public void setFrom(int from) {
+		this.from = from;
+	}
+	public String getVia() {
+		return via;
+	}
+	public void setVia(String via) {
+		this.via = via;
+	}
+	public Group(int from, String via) {
+	    super();
+	    this.from = from;
+	    this.via = via;
+    }
+	@Override
+    public int hashCode() {
+	    final int prime = 31;
+	    int result = 1;
+	    result = prime * result + from;
+	    result = prime * result + ((via == null) ? 0 : via.hashCode());
+	    return result;
+    }
+	@Override
+    public boolean equals(Object obj) {
+		if(obj instanceof Group){
+			if(((Group) obj).from == this.from  && ((Group) obj).via == this.via){
+				return true;
+			}
+		}
+	    return false;
+    }
+	@Override
+    public String toString() {
+	    return "\nGroup [from=" + from + ", via=" + via + "]";
+    }
 }
 
 class  Item{
 	private Production pd;
 	private int dotPos;
-	
+	private Item next;
+	public void setNext(Item next) {
+	    this.next = next;
+    }
+	public Item getNext() {
+	    return next;
+    }
 	public int getDotPos() {
 		return dotPos;
 	}
