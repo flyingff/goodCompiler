@@ -13,7 +13,7 @@ public class LexicalTest {
 		la.load(LexicalTest.class.getResourceAsStream("input.txt"));
 		V vx = la.next();
 		while(vx != null) {
-			System.out.println("[" + vx.name +": " + vx.attr("value") + "]");
+			System.out.println("[name:" + vx.name +", value: " + vx.attr("value") + "]");
 			vx = la.next();
 		}
 	}

@@ -5,11 +5,19 @@ import java.io.InputStream;
 import syntax.V;
 
 /**
- * 功能：把程序转换成Vt序列
- * @author FlyingFlameR
+ * 接口类
+ * @author lxm
  *
  */
 public interface LexicalAnalyzer {
+	/**
+	 * 加载输入流,读取字符流
+	 * @param is
+	 */
 	void load(InputStream is);
+	/**
+	 * 识别单词
+	 * @return
+	 */
 	V next();
 }

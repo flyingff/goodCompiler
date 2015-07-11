@@ -13,13 +13,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * DFAAutomat类,
+ * DFA自动机,实现Serializable接口,将保存到文件中
+ * @author lxm
+ *
+ */
 public class DFAAutomat implements Serializable{
-	public static final char EPSLON = '\0';
-	private static final long serialVersionUID = -4274687974256578446L;
-	private State startState;
-	private Map<Group, State> converts;
-	private Set<State> finalStates;
-	private transient State currState;
+	public static final char EPSLON = '\0';												//EPSLON表示空字符
+	private static final long serialVersionUID = -4274687974256578446L;					//序列号ID
+	private State startState;															//开始状态
+	private Map<Group, State> converts;													//状态转换表
+	private Set<State> finalStates;														//终态集
+	private transient State currState;													//记录当前状态(暂态,对象文件中不保存)
 	
 	private DFAAutomat(State startState,
 			Map<Group, State> converts, Set<State> finalStates) {
@@ -28,9 +34,19 @@ public class DFAAutomat implements Serializable{
 		this.finalStates = finalStates;
 		reset();
 	}
+	
+	/**
+	 * 重置自动机
+	 */
 	public void reset(){
 		currState = startState;
 	}
+	
+	/**
+	 * 根据转换表返回下一状态
+	 * @param input
+	 * @return currState
+	 */
 	public State next(char input){
 		return currState = converts.get(Group.getComparer(currState, input));
 	}
@@ -40,6 +56,12 @@ public class DFAAutomat implements Serializable{
 		}
 		return currState;
 	}
+	
+	/**
+	 * 判断是否到达终态
+	 * @param s
+	 * @return
+	 */
 	public boolean isFinal(State s){
 		return finalStates.contains(s);
 	}
@@ -48,20 +70,30 @@ public class DFAAutomat implements Serializable{
 		return finalStates.contains(currState);
 	}
 	
+	/**
+	 * 将类对象写入文件
+	 * @param os
+	 */
 	public void saveTo(OutputStream os){
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(os);
-			oos.writeObject(this);
+			oos.writeObject(this);														//向文件写入对象
 			oos.close();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * 从文件中加载类对象
+	 * @param is
+	 * @return ret
+	 */
 	public static DFAAutomat load(InputStream is) {
 		DFAAutomat ret = null;
 		try {
 			ObjectInputStream ois = new ObjectInputStream(is);
-			ret = (DFAAutomat)ois.readObject();
+			ret = (DFAAutomat)ois.readObject();											//读取对象
 			ret.reset();
 			ois.close();
 		} catch(Exception e) {
@@ -70,15 +102,32 @@ public class DFAAutomat implements Serializable{
 		return ret;
 	}
 	
+	/**
+	 * 调用内部类,构造自动机
+	 * @return
+	 */
 	public static DFAConstructor constructor(){
 		return new DFAConstructor();
 	}
+	/**
+	 * 内部类
+	 * 构造自动机
+	 * @author lxm
+	 *
+	 */
 	public static class DFAConstructor {
-		private Map<Group, State> map = new HashMap<Group, State>();
-		private Set<State> finals = new HashSet<State>();
-		private State begin;
+		private Map<Group, State> map = new HashMap<Group, State>();					//转换表
+		private Set<State> finals = new HashSet<State>();								//终态集
+		private State begin;															//初始状态
 	
 		private DFAConstructor() {}
+		
+		/**
+		 * 增加一条边
+		 * @param from
+		 * @param via
+		 * @param to
+		 */
 		public void edge(State from, char via, State to){
 			map.put(new Group(from, via), to);
 		}
@@ -93,16 +142,33 @@ public class DFAAutomat implements Serializable{
 		}
 	}
 	
+	/**
+	 * 调用内部类NFAConstructor,构造NFA
+	 * @return
+	 */
 	public static NFAConstructor constructorN(){
 		return new NFAConstructor();
 	}
+	/**
+	 * 内部类
+	 * NFA自动机
+	 * @author lxm
+	 *
+	 */
 	public static class NFAConstructor {
-		private Map<Group, Set<State>> map = new HashMap<Group, Set<State>>();
-		private Set<State> finals = new HashSet<State>();
-		private Set<State> begin = new HashSet<State>();
-		private Set<Character> alpha = new HashSet<Character>();
+		private Map<Group, Set<State>> map = new HashMap<Group, Set<State>>();			//转换表
+		private Set<State> finals = new HashSet<State>();								//终态集
+		private Set<State> begin = new HashSet<State>();								//初始状态集
+		private Set<Character> alpha = new HashSet<Character>();						//字母表
 
 		private NFAConstructor() {}
+		
+		/**
+		 * 增加一条边
+		 * @param from
+		 * @param via
+		 * @param to
+		 */
 		public void edge(State from, char via, State... to){
 			if(via != EPSLON){
 				alpha.add(via);
@@ -120,6 +186,11 @@ public class DFAAutomat implements Serializable{
 		public void begin(State... s) {
 			begin.addAll(Arrays.asList(s));
 		}
+		
+		/**
+		 * 将NFA转换为DFA
+		 * @return
+		 */
 		public DFAAutomat finish(){
 			State begin0 = null;
 			Map<Group, State> map0 = new HashMap<Group, State>();
@@ -164,6 +235,11 @@ public class DFAAutomat implements Serializable{
 			begin0 = sl.get(0);
 			return new DFAAutomat(begin0, map0, finals0);
 		}
+		/**
+		 * 求EPSLON闭包
+		 * @param set
+		 * @return
+		 */
 		private Set<State> closure(Set<State> set){
 			return closure(set, EPSLON);
 		}
@@ -194,6 +270,12 @@ public class DFAAutomat implements Serializable{
 	}
 }
 
+/**
+ * Group类
+ * 记录前一状态和输入字符
+ * @author lxm
+ *
+ */
 class Group implements Serializable{
 	private static final long serialVersionUID = -6497235445783214316L;
 	private static Group BUF = new Group(null, (char)0);
