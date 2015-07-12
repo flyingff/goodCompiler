@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 public class State implements Serializable{
 	private static int x = 0;
-	private static final long serialVersionUID = 7360128750927748735L;					//–Ú¡–∫≈ID
+	private static final long serialVersionUID = 7360128750927748735L;					// –Ú¡–∫≈ID
 	public int priority = -1;
 	public String type = null;
 	private int id;

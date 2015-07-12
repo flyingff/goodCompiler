@@ -20,12 +20,12 @@ import java.util.Set;
  *
  */
 public class DFAAutomat implements Serializable{
-	public static final char EPSLON = '\0';												//EPSLON表示空字符
-	private static final long serialVersionUID = -4274687974256578446L;					//序列号ID
-	private State startState;															//开始状态
-	private Map<Group, State> converts;													//状态转换表
-	private Set<State> finalStates;														//终态集
-	private transient State currState;													//记录当前状态(暂态,对象文件中不保存)
+	public static final char EPSLON = '\0';												// EPSLON表示空字符
+	private static final long serialVersionUID = -4274687974256578446L;					// 序列号ID
+	private State startState;															// 开始状态
+	private Map<Group, State> converts;													// 状态转换表
+	private Set<State> finalStates;														// 终态集
+	private transient State currState;													// 记录当前状态(暂态,对象文件中不保存)
 	
 	private DFAAutomat(State startState,
 			Map<Group, State> converts, Set<State> finalStates) {
@@ -77,7 +77,7 @@ public class DFAAutomat implements Serializable{
 	public void saveTo(OutputStream os){
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(os);
-			oos.writeObject(this);														//向文件写入对象
+			oos.writeObject(this);														// 向文件写入对象
 			oos.close();
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -93,7 +93,7 @@ public class DFAAutomat implements Serializable{
 		DFAAutomat ret = null;
 		try {
 			ObjectInputStream ois = new ObjectInputStream(is);
-			ret = (DFAAutomat)ois.readObject();											//读取对象
+			ret = (DFAAutomat)ois.readObject();											// 读取对象
 			ret.reset();
 			ois.close();
 		} catch(Exception e) {
@@ -116,9 +116,9 @@ public class DFAAutomat implements Serializable{
 	 *
 	 */
 	public static class DFAConstructor {
-		private Map<Group, State> map = new HashMap<Group, State>();					//转换表
-		private Set<State> finals = new HashSet<State>();								//终态集
-		private State begin;															//初始状态
+		private Map<Group, State> map = new HashMap<Group, State>();					// 转换表
+		private Set<State> finals = new HashSet<State>();								// 终态集
+		private State begin;															// 初始状态
 	
 		private DFAConstructor() {}
 		
@@ -156,10 +156,10 @@ public class DFAAutomat implements Serializable{
 	 *
 	 */
 	public static class NFAConstructor {
-		private Map<Group, Set<State>> map = new HashMap<Group, Set<State>>();			//转换表
-		private Set<State> finals = new HashSet<State>();								//终态集
-		private Set<State> begin = new HashSet<State>();								//初始状态集
-		private Set<Character> alpha = new HashSet<Character>();						//字母表
+		private Map<Group, Set<State>> map = new HashMap<Group, Set<State>>();			// 转换表
+		private Set<State> finals = new HashSet<State>();								// 终态集
+		private Set<State> begin = new HashSet<State>();								// 初始状态集
+		private Set<Character> alpha = new HashSet<Character>();						// 字母表
 
 		private NFAConstructor() {}
 		
@@ -252,7 +252,7 @@ public class DFAAutomat implements Serializable{
 					ret.addAll(snext);
 				}
 			}
-			// calculate epslon closure
+			//  calculate epslon closure
 			boolean change = true;
 			while(change) {
 				change = false;
