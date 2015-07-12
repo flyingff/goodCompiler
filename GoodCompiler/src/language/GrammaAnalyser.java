@@ -21,9 +21,9 @@ public class GrammaAnalyser {
 	private Set<Item> psset = new HashSet<Item>();										// 所有项目的集合
 	private Set<String> vnset = new HashSet<String>();									// 非终结符集合
 	private Map<String, Set<String>> firstSet = new HashMap<String, Set<String>>();		// 所有非终结符的FIRST集合
-	private Map<String, Set<String>> lastSet = new HashMap<String, Set<String>>();		// 所有非终结符的LAST集合
+	private Map<String, Set<String>> followSet = new HashMap<String, Set<String>>();		// 所有非终结符的FOLLOW集合
+	private Map<Group, Integer> gotomap = new HashMap<Group, Integer>();				// GOTO转换表
 	
-	Map<Group, Integer> gotomap = new HashMap<Group, Integer>();						// GOTO转换表
 	public GrammaAnalyser(InputStream is) {
 		p = new Properties();
 		try {
@@ -63,12 +63,13 @@ public class GrammaAnalyser {
 		System.out.println("GOTO表:\n" +  mGotos.toString());
 		
 		System.out.println("FIRST SET:" + getFirstSet(map).toString());
-		System.out.println("LAST SET:" + getLastSet(map).toString());
+		System.out.println("FOLLOW SET:" + getFollowSet(map).toString());
+		AnalyzeTable at = constructor();
+		at.show();
 		
 	}
 	public static void main(String[] args) {
-		GrammaAnalyser ga = new GrammaAnalyser(GrammaAnalyser.class.getResourceAsStream("gramma.properties"));
-	
+		new GrammaAnalyser(GrammaAnalyser.class.getResourceAsStream("gramma.properties"));
 	}
 	/**
 	 * 返回项目集
@@ -156,22 +157,22 @@ public class GrammaAnalyser {
 	}
 	
 	/**
-	 * 获得非终结符的last集
+	 * 获得非终结符的follow集
 	 * @param map
-	 * @return lastSet
+	 * @return followSet
 	 */
-	public Map<String, Set<String>> getLastSet(Map<String, Set<Production>> map){
+	public Map<String, Set<String>> getFollowSet(Map<String, Set<Production>> map){
 		Set<Map.Entry<String, Set<Production>>> entries = map.entrySet();
 		for(Entry<String, Set<Production>> ex : entries){
 			String vn = ex.getKey();
-			lastSet.put(vn, new HashSet<String>());												// 初始化last集
+			followSet.put(vn, new HashSet<String>());												// 初始化follow集
 			if (vn.equals(START)){
-				lastSet.get(vn).add(TERMINATOR);
+				followSet.get(vn).add(TERMINATOR);
 			}
 		}
 		boolean isChanged = true;
 		while(isChanged){
-			isChanged = false;																	//标记last集是否变化
+			isChanged = false;																	//标记follow集是否变化
 			for(Entry<String, Set<Production>> ex : entries){
 				String left = ex.getKey();
 				for(Production p : ex.getValue()){
@@ -179,48 +180,48 @@ public class GrammaAnalyser {
 					for(int i = 0; i < right.length; i++){
 						String tmp = right[i];													// 取出产生式右部第i个符号
 						if(vnset.contains(tmp)){	
-							Set<String> last = lastSet.get(tmp);
-							int lastsize = last.size();
+							Set<String> follow = followSet.get(tmp);
+							int followsize = follow.size();
 							if(i < right.length - 1){											// 若为非终结符且不是右部最后一个符号
 								if(!vnset.contains(right[i + 1])){								// 若下一个符号是终结符
-									last.add(right[i + 1]);										// 将其加入非终结符的last集
+									follow.add(right[i + 1]);										// 将其加入非终结符的follow集
 								} else {
-									last.addAll(firstSet.get(right[i + 1]));					// 否则加入下一个非终结符的first集
-									last.remove(EPSLON);										// 并去除epslon
+									follow.addAll(firstSet.get(right[i + 1]));					// 否则加入下一个非终结符的first集
+									follow.remove(EPSLON);										// 并去除epslon
 									int x = i + 1; 
 									while(x < right.length - 1){								// 判断之后是否还有非终结符
 										if(vnset.contains(right[x]) 							
 											&& firstSet.get(right[x]).contains(EPSLON)){		// 若有且first集包含EPSLON
-											if(vnset.contains(right[x + 1])){					// 将其first集加入当前的last集
-												last.addAll(firstSet.get(right[x + 1]));
+											if(vnset.contains(right[x + 1])){					// 将其first集加入当前的follow集
+												follow.addAll(firstSet.get(right[x + 1]));
 												x ++;
 											} else {
-												last.add(right[x]);								// 否则将终结符加入当前的last集
-												last.remove(EPSLON);							// 并去除epslon
+												follow.add(right[x]);								// 否则将终结符加入当前的follow集
+												follow.remove(EPSLON);							// 并去除epslon
 												break;
 											}
 										}
 									}
 									if(x == right.length - 1 && vnset.contains(right[x])){
-										last.addAll(lastSet.get(left));
-										last.remove(EPSLON);
+										follow.addAll(followSet.get(left));
+										follow.remove(EPSLON);
 									}
 								}
 							}
 							if(vnset.contains(tmp) && i == right.length - 1){
-								last.addAll(lastSet.get(left));
+								follow.addAll(followSet.get(left));
 							}
-							isChanged = isChanged || last.size() > lastsize;
+							isChanged = isChanged || follow.size() > followsize;
 						}
 					}
 				}
 			}
 		}
-			return lastSet;
+			return followSet;
 	}
 
 	/**
-	 * 构造GOTO转换表的自动机
+	 * 构造GOTO状态转换的自动机
 	 * @param psset
 	 * @return gotomap
 	 */
@@ -313,7 +314,49 @@ public class GrammaAnalyser {
 		}
 		return key;
 	}
+
+	//
+	private AnalyzeTable constructor(){
+		Map<Group, Action> table = new HashMap<>();
+		for(Entry<Group, Integer> ex : gotomap.entrySet()){
+			Group g = ex.getKey();
+			int currState = g.getFrom();
+			String via = g.getVia();
+			int nextState = ex.getValue(); 
+			Set<Item> from = itemfamily.get(currState);
+			for(Item ix : from){
+				int dotpos = ix.getDotPos();
+				int len = ix.getPd().getRight().length;
+				if(dotpos < len){
+					if(vnset.contains(ix.getPd().getRight()[dotpos])){
+						Action a = new Action(Action.GOTO, nextState);
+						table.put(g, a);
+					} else {
+						Action a = new Action(Action.STEPINTO, nextState);
+						table.put(g, a);
+					}
+				} else {
+					if(ix.getPd().getLeft().equals(START)){
+						Action a = new Action();
+						table.put(g, a);
+					}else {
+						Set<String> follow = followSet.get(ix.getPd().getLeft());
+						for(String x : follow){
+							Group gx = new Group(currState, x);
+							Action a = new Action(ix.getPd());
+							table.put(gx, a);
+						}
+					}
+				}
+			}
+		}
+		return new AnalyzeTable(table);
+	}
 }
+
+
+
+
 
 /**
  * group类
@@ -414,41 +457,5 @@ class  Item{
 	@Override
 	public int hashCode() {
 		return pd.hashCode() << 4 + dotPos;
-	}
-}
- 
-/**
- * Production类
- * 记录产生式的所有信息
- * 包括产生式左部left,产生式右部文法符号列表right和执行动作的方法的路径action
- * @author lxm
- *
- */
-class Production{
-	private String left;
-	private String[] right;
-	private String action;
-	public String[] getRight() {
-		return right;
-	}
-	public void setRight(String[] right) {
-		this.right = right;
-	}
-	public String getAction() {
-		return action;
-	}
-	public void setAction(String action) {
-		this.action = action;
-	}
-	@Override 
-	public String toString() {
-		return "\n" + left + "-->" + Arrays.toString(right)
-				+ "@" + action;
-	}
-	public String getLeft() {
-		return left;
-	}
-	public void setLeft(String left) {
-		this.left = left;
 	}
 }
