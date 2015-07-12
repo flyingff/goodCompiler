@@ -1,17 +1,17 @@
 package language;
 
 /**
- * ActionÀà
- * ·ÖÎö±í½«ÒªÖ´ĞĞµÄ¶¯×÷
+ * Actionç±»
+ * åˆ†æè¡¨å°†è¦æ‰§è¡Œçš„åŠ¨ä½œ
  * @author lxm
  *
  */
 public class Action {
 	public static final int REDUCTION = 1, STEPINTO = 2, GOTO = 3, ACC = 4;
 	private static final String[] TYPENAME = new String[]{"ERR-0", "Reduction", "StepInto", "Goto", "Accept"};
-	private	int type;																	//¶¯×÷ÀàĞÍ:ÒÆ½øS,¹æÔ¼RºÍ½ÓÊÜaccµÈ
-	private int state = -1;																	//ÏÂÒ»¸ö×´Ì¬
-	private Production p = null;														//°´´Ë²úÉúÊ½¹æÔ¼
+	private	int type;																	//åŠ¨ä½œç±»å‹:ç§»è¿›S,è§„çº¦Rå’Œæ¥å—accç­‰
+	private int state = -1;																	//ä¸‹ä¸€ä¸ªçŠ¶æ€
+	private Production p = null;														//æŒ‰æ­¤äº§ç”Ÿå¼è§„çº¦
 	public Action() {
 		type = ACC;
 	}

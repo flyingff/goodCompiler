@@ -3,14 +3,14 @@ package dfaautomat;
 import java.io.Serializable;
 
 /**
- * StateÀà
- * ¼ÇÂ¼×´Ì¬µÄÀàĞÍtypeºÍÓÅÏÈ¼¶priority
+ * Stateç±»
+ * è®°å½•çŠ¶æ€çš„ç±»å‹typeå’Œä¼˜å…ˆçº§priority
  * @author lxm
  *
  */
 public class State implements Serializable{
 	private static int x = 0;
-	private static final long serialVersionUID = 7360128750927748735L;					// ĞòÁĞºÅID
+	private static final long serialVersionUID = 7360128750927748735L;					// åºåˆ—å·ID
 	public int priority = -1;
 	public String type = null;
 	private int id;

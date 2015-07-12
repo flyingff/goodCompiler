@@ -15,14 +15,14 @@ import java.util.Set;
 public class GrammaAnalyser {
 	private static final String EPSLON = "_", TERMINATOR = "#", START = "S";
 	private Properties p;
-	private Map<String, Set<Production>> map = new HashMap<String, Set<Production>>();	// ×ó²¿ÏàÍ¬µÄ²úÉúÊ½¼¯ºÏ
-	private List<Set<Item>> itemfamily = new ArrayList<>();								// ÏîÄ¿¼¯¹æ·¶×å
-	private Set<String> vset = new HashSet<>();											// ËùÓĞ·ûºÅµÄ¼¯ºÏ(°üÀ¨ÖÕ½á·ûºÍ·ÇÖÕ½á·û)
-	private Set<Item> psset = new HashSet<Item>();										// ËùÓĞÏîÄ¿µÄ¼¯ºÏ
-	private Set<String> vnset = new HashSet<String>();									// ·ÇÖÕ½á·û¼¯ºÏ
-	private Map<String, Set<String>> firstSet = new HashMap<String, Set<String>>();		// ËùÓĞ·ÇÖÕ½á·ûµÄFIRST¼¯ºÏ
-	private Map<String, Set<String>> followSet = new HashMap<String, Set<String>>();		// ËùÓĞ·ÇÖÕ½á·ûµÄFOLLOW¼¯ºÏ
-	private Map<Group, Integer> gotomap = new HashMap<Group, Integer>();				// GOTO×ª»»±í
+	private Map<String, Set<Production>> map = new HashMap<String, Set<Production>>();	// å·¦éƒ¨ç›¸åŒçš„äº§ç”Ÿå¼é›†åˆ
+	private List<Set<Item>> itemfamily = new ArrayList<>();								// é¡¹ç›®é›†è§„èŒƒæ—
+	private Set<String> vset = new HashSet<>();											// æ‰€æœ‰ç¬¦å·çš„é›†åˆ(åŒ…æ‹¬ç»ˆç»“ç¬¦å’Œéç»ˆç»“ç¬¦)
+	private Set<Item> psset = new HashSet<Item>();										// æ‰€æœ‰é¡¹ç›®çš„é›†åˆ
+	private Set<String> vnset = new HashSet<String>();									// éç»ˆç»“ç¬¦é›†åˆ
+	private Map<String, Set<String>> firstSet = new HashMap<String, Set<String>>();		// æ‰€æœ‰éç»ˆç»“ç¬¦çš„FIRSTé›†åˆ
+	private Map<String, Set<String>> followSet = new HashMap<String, Set<String>>();		// æ‰€æœ‰éç»ˆç»“ç¬¦çš„FOLLOWé›†åˆ
+	private Map<Group, Integer> gotomap = new HashMap<Group, Integer>();				// GOTOè½¬æ¢è¡¨
 	
 	public GrammaAnalyser(InputStream is) {
 		p = new Properties();
@@ -31,23 +31,23 @@ public class GrammaAnalyser {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		for(Entry<Object, Object> x : p.entrySet()){									// ±éÀúÊôĞÔ±í
+		for(Entry<Object, Object> x : p.entrySet()){									// éå†å±æ€§è¡¨
 			Set<Production> xset = new HashSet<Production>();
-			String left = ((String) x.getKey()).trim();									// µÃµ½²úÉúÊ½µÄ×ó²¿
-			vset.add(left);																// ½«×ó²¿ÎÄ·¨·ûºÅ¼ÓÈëÎÄ·¨·ûºÅ¼¯ºÏ
-			String[] ss = ((String) x.getValue()).split("\\|");							// ÓÃ|ÌáÈ¡Ã¿Ò»ÓÒ²¿
+			String left = ((String) x.getKey()).trim();									// å¾—åˆ°äº§ç”Ÿå¼çš„å·¦éƒ¨
+			vset.add(left);																// å°†å·¦éƒ¨æ–‡æ³•ç¬¦å·åŠ å…¥æ–‡æ³•ç¬¦å·é›†åˆ
+			String[] ss = ((String) x.getValue()).split("\\|");							// ç”¨|æå–æ¯ä¸€å³éƒ¨
 			for(int i = 0;i < ss.length; i++){
 				Production p = new Production();
 				String[] str = ss[i].split("@");	
-				String[] arr = str[0].trim().split(" *, *");							// ÌáÈ¡ÓÒ²¿ËùÓĞµÄÎÄ·¨·ûºÅ											//  ÌáÈ¡Ã¿Ò»ÓÒ²¿µÄÖ´ĞĞ¶¯×÷µÄ·½·¨µÄÂ·¾¶
+				String[] arr = str[0].trim().split(" *, *");							// æå–å³éƒ¨æ‰€æœ‰çš„æ–‡æ³•ç¬¦å·											//  æå–æ¯ä¸€å³éƒ¨çš„æ‰§è¡ŒåŠ¨ä½œçš„æ–¹æ³•çš„è·¯å¾„
 				if(arr.length == 1 && arr[0].equals(EPSLON)){
 					p.setRight(new String[0]);
 				} else {
 					p.setRight(arr);
 				}
-				vset.addAll(Arrays.asList(p.getRight()));								// ¼ÓÈëÎÄ·¨·ûºÅ¼¯ºÏ
-				p.setAction(str[1].trim());												// ÉèÖÃ²úÉúÊ½µÄ¶¯×÷Â·¾¶
-				p.setLeft(left);														// ÉèÖÃ²úÉúÊ½µÄ×ó²¿
+				vset.addAll(Arrays.asList(p.getRight()));								// åŠ å…¥æ–‡æ³•ç¬¦å·é›†åˆ
+				p.setAction(str[1].trim());												// è®¾ç½®äº§ç”Ÿå¼çš„åŠ¨ä½œè·¯å¾„
+				p.setLeft(left);														// è®¾ç½®äº§ç”Ÿå¼çš„å·¦éƒ¨
 				vnset.add(left);
 				xset.add(p);								
 			 }
@@ -57,10 +57,10 @@ public class GrammaAnalyser {
 		//  System.out.println(map.toString());
 		Set<Item> sItems = getItemSet(map);
 		System.out.println(sItems.toString());
-		System.out.println( "ÎÄ·¨·ûºÅ:\n" + vset.toString());
-		System.out.println("·ÇÖÕ½á·û¼¯:\n" + vnset.toString());
+		System.out.println( "æ–‡æ³•ç¬¦å·:\n" + vset.toString());
+		System.out.println("éç»ˆç»“ç¬¦é›†:\n" + vnset.toString());
 		Map<Group, Integer> mGotos = automat(sItems);
-		System.out.println("GOTO±í:\n" +  mGotos.toString());
+		System.out.println("GOTOè¡¨:\n" +  mGotos.toString());
 		
 		System.out.println("FIRST SET:" + getFirstSet(map).toString());
 		System.out.println("FOLLOW SET:" + getFollowSet(map).toString());
@@ -72,7 +72,7 @@ public class GrammaAnalyser {
 		new GrammaAnalyser(GrammaAnalyser.class.getResourceAsStream("gramma.properties"));
 	}
 	/**
-	 * ·µ»ØÏîÄ¿¼¯
+	 * è¿”å›é¡¹ç›®é›†
 	 * @param map
 	 * @return psset
 	 */
@@ -80,7 +80,7 @@ public class GrammaAnalyser {
 		for(Entry<String, Set<Production>> ex : map.entrySet()){
 			for(Production px : ex.getValue()){
 				int pos = 0;
-				int len = px.getRight().length;											// µÃµ½ÏàÍ¬×ó²¿µÄÓÒ²¿×ÜÊı
+				int len = px.getRight().length;											// å¾—åˆ°ç›¸åŒå·¦éƒ¨çš„å³éƒ¨æ€»æ•°
 				Item last = null;														
 				while(pos < len + 1){
 					Item ps = new Item();
@@ -91,7 +91,7 @@ public class GrammaAnalyser {
 					if (last != null) {
 						last.setNext(ps);												
 					}
-					last = ps;															// ±£´æÉÏÒ»¸öÏîÄ¿
+					last = ps;															// ä¿å­˜ä¸Šä¸€ä¸ªé¡¹ç›®
 				}
 			}
 		}
@@ -100,7 +100,7 @@ public class GrammaAnalyser {
 	}
 	
 	/**
-	 * »ñµÃ·ÇÖÕ½á·ûµÄFirst¼¯
+	 * è·å¾—éç»ˆç»“ç¬¦çš„Firsté›†
 	 * @param pros
 	 * @return firstSet
 	 */
@@ -108,39 +108,39 @@ public class GrammaAnalyser {
 		Set<Map.Entry<String, Set<Production>>> entries = pros.entrySet();
 		for(Entry<String, Set<Production> > ex : entries){
 			String vn = ex.getKey();
-			firstSet.put(vn, new HashSet<String>());										// ³õÊ¼»¯first¼¯
+			firstSet.put(vn, new HashSet<String>());										// åˆå§‹åŒ–firsté›†
 		}
 		boolean isChanged = true;
-		while(isChanged){																	// Ñ­»·Ö±µ½ËùÓĞµÄfirst¼¯²»ÔÙ¸Ä±ä
-			isChanged = false;																// ±ê¼Çfirst¼¯ÊÇ·ñ±ä»¯
-			for(Entry<String, Set<Production> > ex : entries){								// ±éÀúËùÓĞµÄ²úÉúÊ½
+		while(isChanged){																	// å¾ªç¯ç›´åˆ°æ‰€æœ‰çš„firsté›†ä¸å†æ”¹å˜
+			isChanged = false;																// æ ‡è®°firsté›†æ˜¯å¦å˜åŒ–
+			for(Entry<String, Set<Production> > ex : entries){								// éå†æ‰€æœ‰çš„äº§ç”Ÿå¼
 				String left = ex.getKey();
 				Set<String> currFirstSet = firstSet.get(left);
 				int beginSize = currFirstSet.size();
 				for(Production p : ex.getValue()){
 					if(p.getRight().length != 0){
 						String tmp = p.getRight()[0];
-						if(vnset.contains(tmp)){											// ²úÉúÊ½ÓÒ²¿µÚÒ»¸ö·ûºÅÊÇ·ÇÖÕ½á·û
-							currFirstSet.addAll(firstSet.get(tmp));							// ½«´Ë·ÇÖÕ½á·ûµÄfirst¼¯¼ÓÈëµ±Ç°µÄfirst¼¯
-							if(firstSet.get(tmp).contains(EPSLON)){							// ·ÇÖÕ½á·ûµÄfirst¼¯°üº¬EPSLON
+						if(vnset.contains(tmp)){											// äº§ç”Ÿå¼å³éƒ¨ç¬¬ä¸€ä¸ªç¬¦å·æ˜¯éç»ˆç»“ç¬¦
+							currFirstSet.addAll(firstSet.get(tmp));							// å°†æ­¤éç»ˆç»“ç¬¦çš„firsté›†åŠ å…¥å½“å‰çš„firsté›†
+							if(firstSet.get(tmp).contains(EPSLON)){							// éç»ˆç»“ç¬¦çš„firsté›†åŒ…å«EPSLON
 								int len = p.getRight().length;
 								int i = 1;
-								//   ÅĞ¶ÏÆäºóµÄ·ûºÅÊÇ·ñÎª·ÇÖÕ½á·ûÇÒÆäfirst¼¯ÊÇ·ñº¬ÓĞEPSLON
+								//   åˆ¤æ–­å…¶åçš„ç¬¦å·æ˜¯å¦ä¸ºéç»ˆç»“ç¬¦ä¸”å…¶firsté›†æ˜¯å¦å«æœ‰EPSLON
 								while(i < len &&
 										firstSet.get(p.getRight()[i - 1]).contains(EPSLON)){
-									if(vnset.contains(p.getRight()[i])){					// ÊÇ·ÇÖÕ½á·û
-										currFirstSet.addAll(firstSet.get(p.getRight()[i]));	// ½«Æäfirst¼¯¼ÓÈë
+									if(vnset.contains(p.getRight()[i])){					// æ˜¯éç»ˆç»“ç¬¦
+										currFirstSet.addAll(firstSet.get(p.getRight()[i]));	// å°†å…¶firsté›†åŠ å…¥
 										i++;
 									} else {
-										currFirstSet.add(p.getRight()[i]);					// ½«ÖÕ½á·û¼ÓÈë
+										currFirstSet.add(p.getRight()[i]);					// å°†ç»ˆç»“ç¬¦åŠ å…¥
 										break;
 									}
 								}
-								if(i == len													// ÈôÖ®Ç°ËùÓĞ·ûºÅ¾ùÎª·ÇÖÕ½á·û
-									&& (firstSet.get(p.getRight()[i - 1]).contains(EPSLON))){// ×îºóÒ»¸ö·ûºÅÆäfirst¼¯°üº¬EPSLON
-									currFirstSet.add(EPSLON);								// ½«EPSLON¼ÓÈëµ±Ç°first¼¯
+								if(i == len													// è‹¥ä¹‹å‰æ‰€æœ‰ç¬¦å·å‡ä¸ºéç»ˆç»“ç¬¦
+									&& (firstSet.get(p.getRight()[i - 1]).contains(EPSLON))){// æœ€åä¸€ä¸ªç¬¦å·å…¶firsté›†åŒ…å«EPSLON
+									currFirstSet.add(EPSLON);								// å°†EPSLONåŠ å…¥å½“å‰firsté›†
 								} else {
-									currFirstSet.remove(EPSLON);							// ·ñÔò´Ófirst¼¯ÖĞÈ¥³ıEPSLON
+									currFirstSet.remove(EPSLON);							// å¦åˆ™ä»firsté›†ä¸­å»é™¤EPSLON
 								}
 							}
 						} else {
@@ -157,7 +157,7 @@ public class GrammaAnalyser {
 	}
 	
 	/**
-	 * »ñµÃ·ÇÖÕ½á·ûµÄfollow¼¯
+	 * è·å¾—éç»ˆç»“ç¬¦çš„followé›†
 	 * @param map
 	 * @return followSet
 	 */
@@ -165,39 +165,39 @@ public class GrammaAnalyser {
 		Set<Map.Entry<String, Set<Production>>> entries = map.entrySet();
 		for(Entry<String, Set<Production>> ex : entries){
 			String vn = ex.getKey();
-			followSet.put(vn, new HashSet<String>());												// ³õÊ¼»¯follow¼¯
+			followSet.put(vn, new HashSet<String>());												// åˆå§‹åŒ–followé›†
 			if (vn.equals(START)){
 				followSet.get(vn).add(TERMINATOR);
 			}
 		}
 		boolean isChanged = true;
 		while(isChanged){
-			isChanged = false;																	//±ê¼Çfollow¼¯ÊÇ·ñ±ä»¯
+			isChanged = false;																	//æ ‡è®°followé›†æ˜¯å¦å˜åŒ–
 			for(Entry<String, Set<Production>> ex : entries){
 				String left = ex.getKey();
 				for(Production p : ex.getValue()){
 					String[] right = p.getRight();
 					for(int i = 0; i < right.length; i++){
-						String tmp = right[i];													// È¡³ö²úÉúÊ½ÓÒ²¿µÚi¸ö·ûºÅ
+						String tmp = right[i];													// å–å‡ºäº§ç”Ÿå¼å³éƒ¨ç¬¬iä¸ªç¬¦å·
 						if(vnset.contains(tmp)){	
 							Set<String> follow = followSet.get(tmp);
 							int followsize = follow.size();
-							if(i < right.length - 1){											// ÈôÎª·ÇÖÕ½á·ûÇÒ²»ÊÇÓÒ²¿×îºóÒ»¸ö·ûºÅ
-								if(!vnset.contains(right[i + 1])){								// ÈôÏÂÒ»¸ö·ûºÅÊÇÖÕ½á·û
-									follow.add(right[i + 1]);										// ½«Æä¼ÓÈë·ÇÖÕ½á·ûµÄfollow¼¯
+							if(i < right.length - 1){											// è‹¥ä¸ºéç»ˆç»“ç¬¦ä¸”ä¸æ˜¯å³éƒ¨æœ€åä¸€ä¸ªç¬¦å·
+								if(!vnset.contains(right[i + 1])){								// è‹¥ä¸‹ä¸€ä¸ªç¬¦å·æ˜¯ç»ˆç»“ç¬¦
+									follow.add(right[i + 1]);										// å°†å…¶åŠ å…¥éç»ˆç»“ç¬¦çš„followé›†
 								} else {
-									follow.addAll(firstSet.get(right[i + 1]));					// ·ñÔò¼ÓÈëÏÂÒ»¸ö·ÇÖÕ½á·ûµÄfirst¼¯
-									follow.remove(EPSLON);										// ²¢È¥³ıepslon
+									follow.addAll(firstSet.get(right[i + 1]));					// å¦åˆ™åŠ å…¥ä¸‹ä¸€ä¸ªéç»ˆç»“ç¬¦çš„firsté›†
+									follow.remove(EPSLON);										// å¹¶å»é™¤epslon
 									int x = i + 1; 
-									while(x < right.length - 1){								// ÅĞ¶ÏÖ®ºóÊÇ·ñ»¹ÓĞ·ÇÖÕ½á·û
+									while(x < right.length - 1){								// åˆ¤æ–­ä¹‹åæ˜¯å¦è¿˜æœ‰éç»ˆç»“ç¬¦
 										if(vnset.contains(right[x]) 							
-											&& firstSet.get(right[x]).contains(EPSLON)){		// ÈôÓĞÇÒfirst¼¯°üº¬EPSLON
-											if(vnset.contains(right[x + 1])){					// ½«Æäfirst¼¯¼ÓÈëµ±Ç°µÄfollow¼¯
+											&& firstSet.get(right[x]).contains(EPSLON)){		// è‹¥æœ‰ä¸”firsté›†åŒ…å«EPSLON
+											if(vnset.contains(right[x + 1])){					// å°†å…¶firsté›†åŠ å…¥å½“å‰çš„followé›†
 												follow.addAll(firstSet.get(right[x + 1]));
 												x ++;
 											} else {
-												follow.add(right[x]);								// ·ñÔò½«ÖÕ½á·û¼ÓÈëµ±Ç°µÄfollow¼¯
-												follow.remove(EPSLON);							// ²¢È¥³ıepslon
+												follow.add(right[x]);								// å¦åˆ™å°†ç»ˆç»“ç¬¦åŠ å…¥å½“å‰çš„followé›†
+												follow.remove(EPSLON);							// å¹¶å»é™¤epslon
 												break;
 											}
 										}
@@ -221,13 +221,13 @@ public class GrammaAnalyser {
 	}
 
 	/**
-	 * ¹¹ÔìGOTO×´Ì¬×ª»»µÄ×Ô¶¯»ú
+	 * æ„é€ GOTOçŠ¶æ€è½¬æ¢çš„è‡ªåŠ¨æœº
 	 * @param psset
 	 * @return gotomap
 	 */
 	public Map<Group, Integer> automat(Set<Item> psset){
 		
-		Set<Item> begin = new HashSet<Item>();											// ³õÊ¼ÏîÄ¿¼¯ºÏ
+		Set<Item> begin = new HashSet<Item>();											// åˆå§‹é¡¹ç›®é›†åˆ
 		for(Item psx : psset){
 			if(psx.getPd().getLeft().equals(START) && psx.getDotPos() == 0){
 				begin.add(psx);
@@ -237,25 +237,25 @@ public class GrammaAnalyser {
 		itemfamily.add(begin);
 		for(int i = 0; i < itemfamily.size(); i++){
 			//  System.out.println( " index :" + i + ", itemset: " + itemfamily.get(i).toString());
-			for(String str : vset){														// ¶ÔÃ¿Ò»¸öÎÄ·¨·ûºÅ½øĞĞGOTO¶¯×÷
-				Set<Item> sx = getItemFamily(itemfamily.get(i), str);					// µÃµ½ÏÂÒ»¸ö×´Ì¬µÄÏîÄ¿¼¯
+			for(String str : vset){														// å¯¹æ¯ä¸€ä¸ªæ–‡æ³•ç¬¦å·è¿›è¡ŒGOTOåŠ¨ä½œ
+				Set<Item> sx = getItemFamily(itemfamily.get(i), str);					// å¾—åˆ°ä¸‹ä¸€ä¸ªçŠ¶æ€çš„é¡¹ç›®é›†
 				if(sx.size() == 0) continue;											
-				getClosure(sx);															// Çó¸ÃÏîÄ¿¼¯µÄ±Õ°ü
+				getClosure(sx);															// æ±‚è¯¥é¡¹ç›®é›†çš„é—­åŒ…
 				int to = getKey(itemfamily, sx);
-				if(to <= -1){															// ¸ÃÏîÄ¿¼¯²»´æÔÚÔò´´½¨²¢²úÉúGOTO×ª»»
+				if(to <= -1){															// è¯¥é¡¹ç›®é›†ä¸å­˜åœ¨åˆ™åˆ›å»ºå¹¶äº§ç”ŸGOTOè½¬æ¢
 					gotomap.put(new Group(i, str), itemfamily.size());
 					itemfamily.add(sx);
-				} else {																// ·ñÔòÖ»²úÉúGOTO×ª»»²»´´½¨
+				} else {																// å¦åˆ™åªäº§ç”ŸGOTOè½¬æ¢ä¸åˆ›å»º
 					gotomap.put(new Group(i, str), to);
 				}
 			}
 		}
-		System.out.println("ÏîÄ¿¼¯¹æ·¶×å¼¯ºÏ: \n" + itemfamily.toString());
+		System.out.println("é¡¹ç›®é›†è§„èŒƒæ—é›†åˆ: \n" + itemfamily.toString());
 		return gotomap;
 	}
 	
 	/**
-	 * ·µ»ØÏîÄ¿¼¯
+	 * è¿”å›é¡¹ç›®é›†
 	 * @param j
 	 * @param prefix
 	 * @return set
@@ -264,35 +264,35 @@ public class GrammaAnalyser {
 		Set<Item> set = new HashSet<Item>();
 		for(Item ix : j){
 			if((ix.getDotPos() < (ix.getPd().getRight().length))
-					&& (ix.getPd().getRight()[ix.getDotPos()].equals(prefix))){			// ÏîÄ¿Î´µ½´ïÄ©Î²ÇÒÆ¥Åä»îÇ°×º
-				set.add(ix.getNext());													// ½«ÆäÖ¸ÏòµÄÏÂÒ»¸öÏîÄ¿¼ÓÈë¼¯ºÏ
+					&& (ix.getPd().getRight()[ix.getDotPos()].equals(prefix))){			// é¡¹ç›®æœªåˆ°è¾¾æœ«å°¾ä¸”åŒ¹é…æ´»å‰ç¼€
+				set.add(ix.getNext());													// å°†å…¶æŒ‡å‘çš„ä¸‹ä¸€ä¸ªé¡¹ç›®åŠ å…¥é›†åˆ
 			}
 		}
 		return set;
 	} 
 	
 	/**
-	 * ·µ»ØÏîÄ¿¼¯jµÄCLOSURE±Õ°ü
+	 * è¿”å›é¡¹ç›®é›†jçš„CLOSUREé—­åŒ…
 	 * @param j
 	 * @return j
 	 */
 	public Set<Item> getClosure(Set<Item> j){
 		int size = 0;
-		Set<Item> tmp = new HashSet<Item>(j);											// ÁÙÊ±±äÁ¿
+		Set<Item> tmp = new HashSet<Item>(j);											// ä¸´æ—¶å˜é‡
 		while(size < j.size()) {
 			size = j.size();
 			for(Item ix : j){
 				String prefix = null;
 				if(ix.getDotPos() < ix.getPd().getRight().length){			
-					prefix = ix.getPd().getRight()[ix.getDotPos()];						// µÃµ½»îÇ°×º
+					prefix = ix.getPd().getRight()[ix.getDotPos()];						// å¾—åˆ°æ´»å‰ç¼€
 				}
 				for(Item xx : psset){
-					if(xx.getPd().getLeft().equals(prefix) && xx.getDotPos() == 0){		// Æ¥Åä×ó²¿µÈ
+					if(xx.getPd().getLeft().equals(prefix) && xx.getDotPos() == 0){		// åŒ¹é…å·¦éƒ¨ç­‰
 						tmp.add(xx);
 					}
 				}
 			}
-			Set<Item> change = j;														// ½»»»jºÍtmp
+			Set<Item> change = j;														// äº¤æ¢jå’Œtmp
 			j = tmp;
 			tmp = change;
 		}
@@ -300,14 +300,14 @@ public class GrammaAnalyser {
 	}
 	
 	/**
-	 * ÓÉÏîÄ¿¼¯»ñµÃÏàÓ¦±àºÅ
+	 * ç”±é¡¹ç›®é›†è·å¾—ç›¸åº”ç¼–å·
 	 * @param itemfamily
 	 * @param si
 	 * @return key
 	 */
 	private int getKey(List<Set<Item> > itemfamily, Set<Item> si){
-		int key = -1;																	// ²»´æÔÚÔò·µ»Ø-1
-		for( int i = 0; i < itemfamily.size(); i++){									// É¨ÃèÏîÄ¿¼¯ÁĞ±í
+		int key = -1;																	// ä¸å­˜åœ¨åˆ™è¿”å›-1
+		for( int i = 0; i < itemfamily.size(); i++){									// æ‰«æé¡¹ç›®é›†åˆ—è¡¨
 			if(itemfamily.get(i).equals(si)){
 				key = i;
 			}
@@ -359,10 +359,10 @@ public class GrammaAnalyser {
 
 
 /**
- * groupÀà
- * ¼ÇÂ¼ÉÏÒ»¸ö×´Ì¬ºÍ¾­ÓÉµÄÎÄ·¨·ûºÅ
- * from±íÊ¾×´Ì¬±àºÅ
- * via±íÊ¾ÎÄ·¨·ûºÅ
+ * groupç±»
+ * è®°å½•ä¸Šä¸€ä¸ªçŠ¶æ€å’Œç»ç”±çš„æ–‡æ³•ç¬¦å·
+ * fromè¡¨ç¤ºçŠ¶æ€ç¼–å·
+ * viaè¡¨ç¤ºæ–‡æ³•ç¬¦å·
  * @author lxm
  *
  */
@@ -410,8 +410,8 @@ class Group{
 }
 
 /**
- * ÏîÄ¿Àà
- * ¼ÇÂ¼²úÉúÊ½pd,Ô²µãÎ»ÖÃdotPosºÍÏÂÒ»¸öÏîÄ¿next
+ * é¡¹ç›®ç±»
+ * è®°å½•äº§ç”Ÿå¼pd,åœ†ç‚¹ä½ç½®dotPoså’Œä¸‹ä¸€ä¸ªé¡¹ç›®next
  * @author lxm
  *
  */
@@ -446,11 +446,11 @@ class  Item{
 			if (i != 0)
 				sb.append(" ");
 			if (dotPos == i)
-				sb.append("¡¤");
+				sb.append("ãƒ»");
 			sb.append(pd.getRight()[i]);
 		}
 		if (dotPos == pd.getRight().length){
-			sb.append("¡¤");
+			sb.append("ãƒ»");
 		}
 		return sb.toString();
 	}

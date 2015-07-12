@@ -15,15 +15,15 @@ import dfaautomat.DFAAutomat.NFAConstructor;
 import dfaautomat.State;
 
 /**
- *  ½âÎöµ¥´ÊÎÄ¼ş
- *  ÎÄ¼şÎªÕı¹æÊ½ÁĞ±í
+ *  è§£æå•è¯æ–‡ä»¶
+ *  æ–‡ä»¶ä¸ºæ­£è§„å¼åˆ—è¡¨
  * @author lxm
  *
  */
 public class TableReader {
 	private DFAAutomat mat;												
-	private Properties p;																//¶ÁÈ¡¿ÉÊ¶±ğµÄµ¥´ÊÁĞ±í
-	private int priority(char ch){														//¶¨Òåµ¥´ÊµÄÓÅÏÈ¼¶
+	private Properties p;																//è¯»å–å¯è¯†åˆ«çš„å•è¯åˆ—è¡¨
+	private int priority(char ch){														//å®šä¹‰å•è¯çš„ä¼˜å…ˆçº§
 		switch(ch) {
 		case ')':
 			return 1;
@@ -41,7 +41,7 @@ public class TableReader {
 	}
 	
 	/**
-	 * ¹¹Ôìº¯Êı, ½âÎöÎÄ¼ş
+	 * æ„é€ å‡½æ•°, è§£ææ–‡ä»¶
 	 * @param is
 	 */
 	public TableReader(InputStream is) {
@@ -51,16 +51,16 @@ public class TableReader {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		Stack<Character> sop = new Stack<Character>();									//²Ù×÷·ûÕ»
-		Stack<SubMat> snum = new Stack<SubMat>();										//²Ù×÷ÊıÕ»
-		NFAConstructor c = DFAAutomat.constructorN();									//¹¹ÔìNFA
+		Stack<Character> sop = new Stack<Character>();									//æ“ä½œç¬¦æ ˆ
+		Stack<SubMat> snum = new Stack<SubMat>();										//æ“ä½œæ•°æ ˆ
+		NFAConstructor c = DFAAutomat.constructorN();									//æ„é€ NFA
 		State s = new State();
 		c.begin(s);
-		for(Entry<Object, Object> ex : p.entrySet()) {									//½âÎöÎÄ¼şÖĞµÄÃ¿Ò»Ìõ¼ÇÂ¼
-			String key = (String) ex.getKey();											//µÃµ½Õı¹æÊ½
+		for(Entry<Object, Object> ex : p.entrySet()) {									//è§£ææ–‡ä»¶ä¸­çš„æ¯ä¸€æ¡è®°å½•
+			String key = (String) ex.getKey();											//å¾—åˆ°æ­£è§„å¼
 			int len = key.length();
 			for(int i = 0; i < len; i++) {
-				char chx = key.charAt(i);												//ÌáÈ¡Õı¹æÊ½µÄÃ¿Ò»¸ö·ûºÅ
+				char chx = key.charAt(i);												//æå–æ­£è§„å¼çš„æ¯ä¸€ä¸ªç¬¦å·
 				switch (chx) {
 				case '(':
 				case ')':
@@ -114,7 +114,7 @@ public class TableReader {
 		return mat;
 	}
 	/**
-	 * ¼ÆËãÕı¹æÊ½,¹¹ÔìNFA
+	 * è®¡ç®—æ­£è§„å¼,æ„é€ NFA
 	 * @param sop
 	 * @param snum
 	 * @param c
@@ -191,8 +191,8 @@ public class TableReader {
 	}
 }
 /**
- * SubMatÀà
- * ¼ÇÂ¼Ã¿Ò»¸ö×ÓÕı¹æÊ½²úÉúµÄ×Ô¶¯»ú
+ * SubMatç±»
+ * è®°å½•æ¯ä¸€ä¸ªå­æ­£è§„å¼äº§ç”Ÿçš„è‡ªåŠ¨æœº
  * @author lxm
  *
  */

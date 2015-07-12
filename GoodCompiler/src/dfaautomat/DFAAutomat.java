@@ -14,18 +14,18 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * DFAAutomatÀà,
- * DFA×Ô¶¯»ú,ÊµÏÖSerializable½Ó¿Ú,½«±£´æµ½ÎÄ¼şÖĞ
+ * DFAAutomatç±»,
+ * DFAè‡ªåŠ¨æœº,å®ç°Serializableæ¥å£,å°†ä¿å­˜åˆ°æ–‡ä»¶ä¸­
  * @author lxm
  *
  */
 public class DFAAutomat implements Serializable{
-	public static final char EPSLON = '\0';												// EPSLON±íÊ¾¿Õ×Ö·û
-	private static final long serialVersionUID = -4274687974256578446L;					// ĞòÁĞºÅID
-	private State startState;															// ¿ªÊ¼×´Ì¬
-	private Map<Group, State> converts;													// ×´Ì¬×ª»»±í
-	private Set<State> finalStates;														// ÖÕÌ¬¼¯
-	private transient State currState;													// ¼ÇÂ¼µ±Ç°×´Ì¬(ÔİÌ¬,¶ÔÏóÎÄ¼şÖĞ²»±£´æ)
+	public static final char EPSLON = '\0';												// EPSLONè¡¨ç¤ºç©ºå­—ç¬¦
+	private static final long serialVersionUID = -4274687974256578446L;					// åºåˆ—å·ID
+	private State startState;															// å¼€å§‹çŠ¶æ€
+	private Map<Group, State> converts;													// çŠ¶æ€è½¬æ¢è¡¨
+	private Set<State> finalStates;														// ç»ˆæ€é›†
+	private transient State currState;													// è®°å½•å½“å‰çŠ¶æ€(æš‚æ€,å¯¹è±¡æ–‡ä»¶ä¸­ä¸ä¿å­˜)
 	
 	private DFAAutomat(State startState,
 			Map<Group, State> converts, Set<State> finalStates) {
@@ -36,14 +36,14 @@ public class DFAAutomat implements Serializable{
 	}
 	
 	/**
-	 * ÖØÖÃ×Ô¶¯»ú
+	 * é‡ç½®è‡ªåŠ¨æœº
 	 */
 	public void reset(){
 		currState = startState;
 	}
 	
 	/**
-	 * ¸ù¾İ×ª»»±í·µ»ØÏÂÒ»×´Ì¬
+	 * æ ¹æ®è½¬æ¢è¡¨è¿”å›ä¸‹ä¸€çŠ¶æ€
 	 * @param input
 	 * @return currState
 	 */
@@ -58,7 +58,7 @@ public class DFAAutomat implements Serializable{
 	}
 	
 	/**
-	 * ÅĞ¶ÏÊÇ·ñµ½´ïÖÕÌ¬
+	 * åˆ¤æ–­æ˜¯å¦åˆ°è¾¾ç»ˆæ€
 	 * @param s
 	 * @return
 	 */
@@ -71,13 +71,13 @@ public class DFAAutomat implements Serializable{
 	}
 	
 	/**
-	 * ½«Àà¶ÔÏóĞ´ÈëÎÄ¼ş
+	 * å°†ç±»å¯¹è±¡å†™å…¥æ–‡ä»¶
 	 * @param os
 	 */
 	public void saveTo(OutputStream os){
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(os);
-			oos.writeObject(this);														// ÏòÎÄ¼şĞ´Èë¶ÔÏó
+			oos.writeObject(this);														// å‘æ–‡ä»¶å†™å…¥å¯¹è±¡
 			oos.close();
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -85,7 +85,7 @@ public class DFAAutomat implements Serializable{
 	}
 	
 	/**
-	 * ´ÓÎÄ¼şÖĞ¼ÓÔØÀà¶ÔÏó
+	 * ä»æ–‡ä»¶ä¸­åŠ è½½ç±»å¯¹è±¡
 	 * @param is
 	 * @return ret
 	 */
@@ -93,7 +93,7 @@ public class DFAAutomat implements Serializable{
 		DFAAutomat ret = null;
 		try {
 			ObjectInputStream ois = new ObjectInputStream(is);
-			ret = (DFAAutomat)ois.readObject();											// ¶ÁÈ¡¶ÔÏó
+			ret = (DFAAutomat)ois.readObject();											// è¯»å–å¯¹è±¡
 			ret.reset();
 			ois.close();
 		} catch(Exception e) {
@@ -103,27 +103,27 @@ public class DFAAutomat implements Serializable{
 	}
 	
 	/**
-	 * µ÷ÓÃÄÚ²¿Àà,¹¹Ôì×Ô¶¯»ú
+	 * è°ƒç”¨å†…éƒ¨ç±»,æ„é€ è‡ªåŠ¨æœº
 	 * @return
 	 */
 	public static DFAConstructor constructor(){
 		return new DFAConstructor();
 	}
 	/**
-	 * ÄÚ²¿Àà
-	 * ¹¹Ôì×Ô¶¯»ú
+	 * å†…éƒ¨ç±»
+	 * æ„é€ è‡ªåŠ¨æœº
 	 * @author lxm
 	 *
 	 */
 	public static class DFAConstructor {
-		private Map<Group, State> map = new HashMap<Group, State>();					// ×ª»»±í
-		private Set<State> finals = new HashSet<State>();								// ÖÕÌ¬¼¯
-		private State begin;															// ³õÊ¼×´Ì¬
+		private Map<Group, State> map = new HashMap<Group, State>();					// è½¬æ¢è¡¨
+		private Set<State> finals = new HashSet<State>();								// ç»ˆæ€é›†
+		private State begin;															// åˆå§‹çŠ¶æ€
 	
 		private DFAConstructor() {}
 		
 		/**
-		 * Ôö¼ÓÒ»Ìõ±ß
+		 * å¢åŠ ä¸€æ¡è¾¹
 		 * @param from
 		 * @param via
 		 * @param to
@@ -143,28 +143,28 @@ public class DFAAutomat implements Serializable{
 	}
 	
 	/**
-	 * µ÷ÓÃÄÚ²¿ÀàNFAConstructor,¹¹ÔìNFA
+	 * è°ƒç”¨å†…éƒ¨ç±»NFAConstructor,æ„é€ NFA
 	 * @return
 	 */
 	public static NFAConstructor constructorN(){
 		return new NFAConstructor();
 	}
 	/**
-	 * ÄÚ²¿Àà
-	 * NFA×Ô¶¯»ú
+	 * å†…éƒ¨ç±»
+	 * NFAè‡ªåŠ¨æœº
 	 * @author lxm
 	 *
 	 */
 	public static class NFAConstructor {
-		private Map<Group, Set<State>> map = new HashMap<Group, Set<State>>();			// ×ª»»±í
-		private Set<State> finals = new HashSet<State>();								// ÖÕÌ¬¼¯
-		private Set<State> begin = new HashSet<State>();								// ³õÊ¼×´Ì¬¼¯
-		private Set<Character> alpha = new HashSet<Character>();						// ×ÖÄ¸±í
+		private Map<Group, Set<State>> map = new HashMap<Group, Set<State>>();			// è½¬æ¢è¡¨
+		private Set<State> finals = new HashSet<State>();								// ç»ˆæ€é›†
+		private Set<State> begin = new HashSet<State>();								// åˆå§‹çŠ¶æ€é›†
+		private Set<Character> alpha = new HashSet<Character>();						// å­—æ¯è¡¨
 
 		private NFAConstructor() {}
 		
 		/**
-		 * Ôö¼ÓÒ»Ìõ±ß
+		 * å¢åŠ ä¸€æ¡è¾¹
 		 * @param from
 		 * @param via
 		 * @param to
@@ -188,7 +188,7 @@ public class DFAAutomat implements Serializable{
 		}
 		
 		/**
-		 * ½«NFA×ª»»ÎªDFA
+		 * å°†NFAè½¬æ¢ä¸ºDFA
 		 * @return
 		 */
 		public DFAAutomat finish(){
@@ -236,7 +236,7 @@ public class DFAAutomat implements Serializable{
 			return new DFAAutomat(begin0, map0, finals0);
 		}
 		/**
-		 * ÇóEPSLON±Õ°ü
+		 * æ±‚EPSLONé—­åŒ…
 		 * @param set
 		 * @return
 		 */
@@ -271,8 +271,8 @@ public class DFAAutomat implements Serializable{
 }
 
 /**
- * GroupÀà
- * ¼ÇÂ¼Ç°Ò»×´Ì¬ºÍÊäÈë×Ö·û
+ * Groupç±»
+ * è®°å½•å‰ä¸€çŠ¶æ€å’Œè¾“å…¥å­—ç¬¦
  * @author lxm
  *
  */

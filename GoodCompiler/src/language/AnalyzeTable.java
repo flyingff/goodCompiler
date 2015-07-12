@@ -7,12 +7,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * SLR(1)·ÖÎö±í,¼ÇÂ¼µ±Ç°×´Ì¬,ÊäÈë·ûºÅºÍÖ´ĞĞ¶¯×÷
+ * SLR(1)åˆ†æè¡¨,è®°å½•å½“å‰çŠ¶æ€,è¾“å…¥ç¬¦å·å’Œæ‰§è¡ŒåŠ¨ä½œ
  * @author lxm
  *
  */
 public class AnalyzeTable {
-	private Map<Group, Action> analyzeTable = new HashMap<Group, Action>();				//·ÖÎö±ímap
+	private Map<Group, Action> analyzeTable = new HashMap<Group, Action>();				//åˆ†æè¡¨map
 	AnalyzeTable(Map<Group, Action> analyzeTable) {
 	    this.analyzeTable = analyzeTable;
     }

@@ -3,9 +3,9 @@ package language;
 import java.util.Arrays;
 
 /**
- * ProductionÀà
- * ¼ÇÂ¼²úÉúÊ½µÄËùÓÐÐÅÏ¢
- * °üÀ¨²úÉúÊ½×ó²¿left,²úÉúÊ½ÓÒ²¿ÎÄ·¨·ûºÅÁÐ±írightºÍÖ´ÐÐ¶¯×÷µÄ·½·¨µÄÂ·¾¶action
+ * Productionç±»
+ * è®°å½•äº§ç”Ÿå¼çš„æ‰€æœ‰ä¿¡æ¯
+ * åŒ…æ‹¬äº§ç”Ÿå¼å·¦éƒ¨left,äº§ç”Ÿå¼å³éƒ¨æ–‡æ³•ç¬¦å·åˆ—è¡¨rightå’Œæ‰§è¡ŒåŠ¨ä½œçš„æ–¹æ³•çš„è·¯å¾„action
  * @author lxm
  *
  */

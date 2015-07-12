@@ -13,20 +13,20 @@ import dfaautomat.State;
 import syntax.V;
 
 /**
- * LexicalAnalyzer½Ó¿ÚÊµÏÖÀà
- * ½«ÊäÈë³ÌĞòÊ¶±ğÎªµ¥´Ê·ûºÅ´®
+ * LexicalAnalyzeræ¥å£å®ç°ç±»
+ * å°†è¾“å…¥ç¨‹åºè¯†åˆ«ä¸ºå•è¯ç¬¦å·ä¸²
  * @author lxm
  *
  */
 public class LexicalAnalyzerImpl implements LexicalAnalyzer {
-	private static final Set<Character> BLANKCH = new HashSet<Character>(Arrays.asList(' ','\t','\n','\r'));//¿Õ°××Ö·û¼¯
-	private BufferedReader br;															//´ÓÊäÈëÁ÷¶ÁÈ¡×Ö·ûµÄ»º³åÇø
-	private int buf = -1;																//»º³åÇø
-	private DFAAutomat dfa;																//DFA×Ô¶¯»ú¶ÔÏó
-	private StringBuffer sb = new StringBuffer();										//±£´æÎ´Ê¶±ğÍêµÄÊäÈë×Ö·û´®
+	private static final Set<Character> BLANKCH = new HashSet<Character>(Arrays.asList(' ','\t','\n','\r'));//ç©ºç™½å­—ç¬¦é›†
+	private BufferedReader br;															//ä»è¾“å…¥æµè¯»å–å­—ç¬¦çš„ç¼“å†²åŒº
+	private int buf = -1;																//ç¼“å†²åŒº
+	private DFAAutomat dfa;																//DFAè‡ªåŠ¨æœºå¯¹è±¡
+	private StringBuffer sb = new StringBuffer();										//ä¿å­˜æœªè¯†åˆ«å®Œçš„è¾“å…¥å­—ç¬¦ä¸²
 	
 	/**
-	 * »ñµÃDFA¶ÔÏó
+	 * è·å¾—DFAå¯¹è±¡
 	 * @param is
 	 */
 	public LexicalAnalyzerImpl(InputStream is) {
@@ -39,25 +39,25 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 
 	@Override
 	public V next() {
-		if(br == null){	throw new RuntimeException("please load file first !");	}		//¶ÁÈ¡ÎÄ¼şÊ§°Ü
+		if(br == null){	throw new RuntimeException("please load file first !");	}		//è¯»å–æ–‡ä»¶å¤±è´¥
 		
 		V v = new V();
 		//boolean isOver = false;
 		
-		sb.setLength(0);																//Çå¿Õ×Ö·û´®»º³åÇø
-		dfa.reset();																	//ÖØÖÃDFA
+		sb.setLength(0);																//æ¸…ç©ºå­—ç¬¦ä¸²ç¼“å†²åŒº
+		dfa.reset();																	//é‡ç½®DFA
 		
-		State curr = null;																//¼ÇÂ¼µ±Ç°×´Ì¬
-		State pre = null;																//¼ÇÂ¼Ç°Ò»×´Ì¬
+		State curr = null;																//è®°å½•å½“å‰çŠ¶æ€
+		State pre = null;																//è®°å½•å‰ä¸€çŠ¶æ€
 		
 		try {
 			// find a non-blank char
 			char r = getChar();
-			while(BLANKCH.contains(r)) {												//ÕÒµ½·Ç¿Õ×Ö·û
+			while(BLANKCH.contains(r)) {												//æ‰¾åˆ°éç©ºå­—ç¬¦
 				r = getChar();
 			}
 			// enable circle	
-			do {																		//¿ªÊ¼Ñ­»·
+			do {																		//å¼€å§‹å¾ªç¯
 				pre = curr;
 				curr = dfa.next(r);
 				if(curr != null){
@@ -65,14 +65,14 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 					r = getChar();
 				}
 			} while(curr != null);
-			buf = r;																	//±£´æ¶à¶ÁµÄ×Ö·û
+			buf = r;																	//ä¿å­˜å¤šè¯»çš„å­—ç¬¦
 			if(dfa.isFinal(pre)){
 				v.name = pre.type;
 				v.attr("value", sb.toString());
 			} else {
 				throw new RuntimeException("lexical error!" + sb.toString());
 			}
-		}catch (FileEndException e){													//¶Áµ½ÎÄ¼şÄ©Î²
+		}catch (FileEndException e){													//è¯»åˆ°æ–‡ä»¶æœ«å°¾
 			if (sb.length() > 0) {
 				if(dfa.isFinal(curr)){
 					v.name = pre.type;
@@ -88,7 +88,7 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 		return v;
 	}
 	/**
-	 * ¶ÁÈ¡Ò»¸ö×Ö·û
+	 * è¯»å–ä¸€ä¸ªå­—ç¬¦
 	 * @return ch
 	 * @throws IOException
 	 */

@@ -5,18 +5,18 @@ import java.io.InputStream;
 import syntax.V;
 
 /**
- * ½Ó¿ÚÀà
+ * æ¥å£ç±»
  * @author lxm
  *
  */
 public interface LexicalAnalyzer {
 	/**
-	 * ¼ÓÔØÊäÈëÁ÷,¶ÁÈ¡×Ö·ûÁ÷
+	 * åŠ è½½è¾“å…¥æµ,è¯»å–å­—ç¬¦æµ
 	 * @param is
 	 */
 	void load(InputStream is);
 	/**
-	 * Ê¶±ğµ¥´Ê
+	 * è¯†åˆ«å•è¯
 	 * @return
 	 */
 	V next();
