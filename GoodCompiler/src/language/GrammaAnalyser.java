@@ -1,7 +1,9 @@
 package language;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,7 +25,7 @@ public class GrammaAnalyser {
 	private Map<String, Set<String>> firstSet = new HashMap<String, Set<String>>();		// 所有非终结符的FIRST集合
 	private Map<String, Set<String>> followSet = new HashMap<String, Set<String>>();		// 所有非终结符的FOLLOW集合
 	private Map<Group, Integer> gotomap = new HashMap<Group, Integer>();				// GOTO转换表
-	
+	private AnalyzeTable at;
 	public GrammaAnalyser(InputStream is) {
 		p = new Properties();
 		try {
@@ -57,26 +59,33 @@ public class GrammaAnalyser {
 		//  System.out.println(map.toString());
 		Set<Item> sItems = getItemSet(map);
 		System.out.println(sItems.toString());
-		System.out.println( "文法符号:\n" + vset.toString());
+		System.out.println("文法符号:\n" + vset.toString());
 		System.out.println("非终结符集:\n" + vnset.toString());
 		Map<Group, Integer> mGotos = automat(sItems);
 		System.out.println("GOTO表:\n" +  mGotos.toString());
 		
 		System.out.println("FIRST SET:" + getFirstSet(map).toString());
 		System.out.println("FOLLOW SET:" + getFollowSet(map).toString());
-		AnalyzeTable at = constructor();
-		at.show();
-		
+		at = constructor();
 	}
-	public static void main(String[] args) {
-		new GrammaAnalyser(GrammaAnalyser.class.getResourceAsStream("gramma.properties"));
+	
+	public AnalyzeTable getAnalyzeTable() {
+	    return at;
+    }
+	
+	public static void main(String[] args) throws IOException{
+		String savePath = "e:\\table1.atab";
+		AnalyzeTable at = new GrammaAnalyser(GrammaAnalyser.class.getResourceAsStream("gramma.properties")).getAnalyzeTable();
+		at.show();
+		at.save(new FileOutputStream(savePath));
+		System.out.println("File saved at '" + savePath + "'.");
 	}
 	/**
 	 * 返回项目集
 	 * @param map
 	 * @return psset
 	 */
-	public Set<Item> getItemSet(Map<String, Set<Production>> map){
+	private Set<Item> getItemSet(Map<String, Set<Production>> map){
 		for(Entry<String, Set<Production>> ex : map.entrySet()){
 			for(Production px : ex.getValue()){
 				int pos = 0;
@@ -95,7 +104,6 @@ public class GrammaAnalyser {
 				}
 			}
 		}
-		//  System.out.println(psset.toString());
 		return psset;
 	}
 	
@@ -104,7 +112,7 @@ public class GrammaAnalyser {
 	 * @param pros
 	 * @return firstSet
 	 */
-	public Map<String, Set<String>> getFirstSet(Map<String, Set<Production>> pros){
+	private Map<String, Set<String>> getFirstSet(Map<String, Set<Production>> pros){
 		Set<Map.Entry<String, Set<Production>>> entries = pros.entrySet();
 		for(Entry<String, Set<Production> > ex : entries){
 			String vn = ex.getKey();
@@ -161,7 +169,7 @@ public class GrammaAnalyser {
 	 * @param map
 	 * @return followSet
 	 */
-	public Map<String, Set<String>> getFollowSet(Map<String, Set<Production>> map){
+	private Map<String, Set<String>> getFollowSet(Map<String, Set<Production>> map){
 		Set<Map.Entry<String, Set<Production>>> entries = map.entrySet();
 		for(Entry<String, Set<Production>> ex : entries){
 			String vn = ex.getKey();
@@ -225,7 +233,7 @@ public class GrammaAnalyser {
 	 * @param psset
 	 * @return gotomap
 	 */
-	public Map<Group, Integer> automat(Set<Item> psset){
+	private Map<Group, Integer> automat(Set<Item> psset){
 		
 		Set<Item> begin = new HashSet<Item>();											// 初始项目集合
 		for(Item psx : psset){
@@ -260,7 +268,7 @@ public class GrammaAnalyser {
 	 * @param prefix
 	 * @return set
 	 */
-	public Set<Item> getItemFamily(Set<Item> j, String prefix){
+	private Set<Item> getItemFamily(Set<Item> j, String prefix){
 		Set<Item> set = new HashSet<Item>();
 		for(Item ix : j){
 			if((ix.getDotPos() < (ix.getPd().getRight().length))
@@ -276,7 +284,7 @@ public class GrammaAnalyser {
 	 * @param j
 	 * @return j
 	 */
-	public Set<Item> getClosure(Set<Item> j){
+	private Set<Item> getClosure(Set<Item> j){
 		int size = 0;
 		Set<Item> tmp = new HashSet<Item>(j);											// 临时变量
 		while(size < j.size()) {
@@ -314,40 +322,64 @@ public class GrammaAnalyser {
 		}
 		return key;
 	}
+	
 
-	//
+	private void tablePut(Map<Group, Action> table, Group g, Action a){
+		if (table.get(g) != null) {
+			System.err.println("WARNING: CONFLICT:");
+			System.err.println("Existing: " + table.get(g));
+			System.err.println("Want to insert: " + a);
+			System.err.println("Position:" + g);
+			System.err.println("Item family:" + itemfamily.get(g.getFrom()));
+			return;
+		}
+		table.put(g, a);
+	}
+	
+	private int getNextState(int curr, String via){
+		int next = -1;
+		Integer ret = gotomap.get(new Group(curr, via));
+		if (ret != null){
+			next = ret;
+		}
+		return next;
+	}
 	private AnalyzeTable constructor(){
 		Map<Group, Action> table = new HashMap<>();
 		for(Entry<Group, Integer> ex : gotomap.entrySet()){
 			Group g = ex.getKey();
-			int currState = g.getFrom();
 			String via = g.getVia();
 			int nextState = ex.getValue(); 
 			if(vnset.contains(via)){
 				Action a = new Action(Action.GOTO, nextState);
+				tablePut(table, g, a);
+				continue;
 			}
-			Set<Item> from = itemfamily.get(currState);
+		}
+		for(int i = 0; i < itemfamily.size(); i++){
+			Set<Item> from = itemfamily.get(i);
 			for(Item ix : from){
 				int dotpos = ix.getDotPos();
 				int len = ix.getPd().getRight().length;
 				if(dotpos < len){
-					if(!vnset.contains(ix.getPd().getRight()[dotpos])){
-						//Action a = new Action(Action.GOTO, nextState);
-						//table.put(g, a);
-					//} else {
-						Action a = new Action(Action.STEPINTO, nextState);
-						table.put(g, a);
-					//}
+					String v = ix.getPd().getRight()[dotpos];
+					int next = getNextState(i, v);
+					if(next != -1 && !vnset.contains(v)){
+						Group t = new Group(i, v);
+						Action a = new Action(Action.STEPINTO, next);
+						tablePut(table, t, a);
+					}
 				} else if(ix.getPd().getLeft().equals(START)){
-						Action a = new Action();
-						table.put(g, a);
-					}else {
-						Set<String> follow = followSet.get(ix.getPd().getLeft());
-						for(String x : follow){
-							Group gx = new Group(currState, x);
-							Action a = new Action(ix.getPd());
-							table.put(gx, a);
-						}
+					Action a = new Action();
+					a.setP(ix.getPd());
+					tablePut(table, new Group(i, TERMINATOR), a);
+				} else {
+					Set<String> follow = followSet.get(ix.getPd().getLeft());
+					
+					for(String x : follow){
+						Group gx = new Group(i, x);
+						Action a = new Action(ix.getPd());
+						tablePut(table, gx, a);
 					}
 				}
 			}
@@ -355,10 +387,6 @@ public class GrammaAnalyser {
 		return new AnalyzeTable(table);
 	}
 }
-
-
-
-
 
 /**
  * group类
@@ -368,7 +396,8 @@ public class GrammaAnalyser {
  * @author lxm
  *
  */
-class Group{
+class Group implements Serializable {
+    private static final long serialVersionUID = 3969890776875195720L;
 	private int from;
 	private String via;
 	public int getFrom() {
@@ -417,7 +446,8 @@ class Group{
  * @author lxm
  *
  */
-class  Item{
+class Item implements Serializable {
+    private static final long serialVersionUID = 8008233021526569262L;
 	private Production pd;
 	private int dotPos;
 	private Item next = null;

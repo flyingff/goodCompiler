@@ -1,7 +1,10 @@
 package language;
 
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,16 +14,31 @@ import java.util.Map.Entry;
  * @author lxm
  *
  */
-public class AnalyzeTable {
+public class AnalyzeTable implements Serializable{
+    private static final long serialVersionUID = 8106377333742804836L;
 	private Map<Group, Action> analyzeTable = new HashMap<Group, Action>();				//分析表map
 	AnalyzeTable(Map<Group, Action> analyzeTable) {
 	    this.analyzeTable = analyzeTable;
     }
 	public static AnalyzeTable load(InputStream is){
-		return null;
+		AnalyzeTable table = null;
+		try {
+			ObjectInputStream ois = new ObjectInputStream(is);
+			table = (AnalyzeTable) ois.readObject();
+			ois.close();
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}
+		return table;
 	}
 	public void save(OutputStream os){
-		
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(os);
+			oos.writeObject(this);
+			oos.close();
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 	public void show() {
 		for(Entry<Group, Action> ex : analyzeTable.entrySet()){

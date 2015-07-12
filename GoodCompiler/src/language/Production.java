@@ -1,5 +1,6 @@
 package language;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -9,7 +10,8 @@ import java.util.Arrays;
  * @author lxm
  *
  */
-public class Production{
+public class Production implements Serializable{
+    private static final long serialVersionUID = -4371732071940483600L;
 	private String left;
 	private String[] right;
 	private String action;

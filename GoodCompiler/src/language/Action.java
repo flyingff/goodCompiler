@@ -1,12 +1,15 @@
 package language;
 
+import java.io.Serializable;
+
 /**
  * Action类
  * 分析表将要执行的动作
  * @author lxm
  *
  */
-public class Action {
+public class Action implements Serializable{
+    private static final long serialVersionUID = -4020721613855722777L;
 	public static final int REDUCTION = 1, STEPINTO = 2, GOTO = 3, ACC = 4;
 	private static final String[] TYPENAME = new String[]{"ERR-0", "Reduction", "StepInto", "Goto", "Accept"};
 	private	int type;																	//动作类型:移进S,规约R和接受acc等
