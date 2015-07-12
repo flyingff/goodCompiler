@@ -24,8 +24,8 @@ public class AnalyzeTable {
 	}
 	public void show() {
 		for(Entry<Group, Action> ex : analyzeTable.entrySet()){
-			System.out.println("from :" + ex.getKey().getFrom() + " via: " + ex.getKey().getVia() + 
-				" Action: " + ex.getValue());
+			System.out.println("from :" + ex.getKey().getFrom() + 
+					" via: " + ex.getKey().getVia() + " Action: " + ex.getValue());
 		}
 	}
 

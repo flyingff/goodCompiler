@@ -323,20 +323,22 @@ public class GrammaAnalyser {
 			int currState = g.getFrom();
 			String via = g.getVia();
 			int nextState = ex.getValue(); 
+			if(vnset.contains(via)){
+				Action a = new Action(Action.GOTO, nextState);
+			}
 			Set<Item> from = itemfamily.get(currState);
 			for(Item ix : from){
 				int dotpos = ix.getDotPos();
 				int len = ix.getPd().getRight().length;
 				if(dotpos < len){
-					if(vnset.contains(ix.getPd().getRight()[dotpos])){
-						Action a = new Action(Action.GOTO, nextState);
-						table.put(g, a);
-					} else {
+					if(!vnset.contains(ix.getPd().getRight()[dotpos])){
+						//Action a = new Action(Action.GOTO, nextState);
+						//table.put(g, a);
+					//} else {
 						Action a = new Action(Action.STEPINTO, nextState);
 						table.put(g, a);
-					}
-				} else {
-					if(ix.getPd().getLeft().equals(START)){
+					//}
+				} else if(ix.getPd().getLeft().equals(START)){
 						Action a = new Action();
 						table.put(g, a);
 					}else {
