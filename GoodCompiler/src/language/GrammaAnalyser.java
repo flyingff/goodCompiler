@@ -190,34 +190,23 @@ public class GrammaAnalyser {
 						if(vnset.contains(tmp)){	
 							Set<String> follow = followSet.get(tmp);
 							int followsize = follow.size();
-							if(i < right.length - 1){											// 若为非终结符且不是右部最后一个符号
-								if(!vnset.contains(right[i + 1])){								// 若下一个符号是终结符
-									follow.add(right[i + 1]);										// 将其加入非终结符的follow集
-								} else {
-									follow.addAll(firstSet.get(right[i + 1]));					// 否则加入下一个非终结符的first集
-									follow.remove(EPSLON);										// 并去除epslon
-									int x = i + 1; 
-									while(x < right.length - 1){								// 判断之后是否还有非终结符
-										if(vnset.contains(right[x]) 							
-											&& firstSet.get(right[x]).contains(EPSLON)){		// 若有且first集包含EPSLON
-											if(vnset.contains(right[x + 1])){					// 将其first集加入当前的follow集
-												follow.addAll(firstSet.get(right[x + 1]));
-												x ++;
-											} else {
-												follow.add(right[x]);								// 否则将终结符加入当前的follow集
-												follow.remove(EPSLON);							// 并去除epslon
-												break;
-											}
-										}
-									}
-									if(x == right.length - 1 && vnset.contains(right[x])){
-										follow.addAll(followSet.get(left));
-										follow.remove(EPSLON);
+							if(i < right.length){												// 若为非终结符且不是右部最后一个符号
+								int x = i + 1;
+								while(x < right.length){										// 判断之后是否还有非终结符
+									if(!vnset.contains(right[x])){
+										follow.add(right[x]);
+										break;
+									} else {
+										follow.addAll(firstSet.get(right[x]));
+										if(firstSet.get(right[x]).contains(EPSLON)){			// 若有且first集包含EPSLON
+											follow.remove(EPSLON);
+											i++;
+										} else break;
 									}
 								}
-							}
-							if(vnset.contains(tmp) && i == right.length - 1){
-								follow.addAll(followSet.get(left));
+								if(x == right.length) {
+									follow.addAll(followSet.get(left));
+								}
 							}
 							isChanged = isChanged || follow.size() > followsize;
 						}
@@ -225,7 +214,7 @@ public class GrammaAnalyser {
 				}
 			}
 		}
-			return followSet;
+		return followSet;
 	}
 
 	/**
