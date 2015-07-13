@@ -10,7 +10,7 @@ import lexical.LexicalAnalyzerImpl;
 public class LexicalTest {
 	public static void main(String[] args) throws IOException {
 		LexicalAnalyzer la = new LexicalAnalyzerImpl(new FileInputStream("e:\\mat1.automat"));
-		la.load(LexicalTest.class.getResourceAsStream("input.txt"));
+		la.load(LexicalTest.class.getResourceAsStream("input1.txt"));
 		V vx = la.next();
 		while(vx != null) {
 			System.out.println("[name:" + vx.name +", value: " + vx.attr("value") + "]");

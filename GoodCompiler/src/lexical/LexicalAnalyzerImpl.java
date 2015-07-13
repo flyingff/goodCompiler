@@ -57,7 +57,7 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 				r = getChar();
 			}
 			// enable circle	
-			do {																		//开始循环
+			do {																		// 开始循环
 				pre = curr;
 				curr = dfa.next(r);
 				if(curr != null){
@@ -65,20 +65,20 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 					r = getChar();
 				}
 			} while(curr != null);
-			buf = r;																	//保存多读的字符
+			buf = r;																	// 保存多读的字符
 			if(dfa.isFinal(pre)){
 				v.name = pre.type;
 				v.attr("value", sb.toString());
 			} else {
-				throw new RuntimeException("lexical error!" + sb.toString());
+				throw new RuntimeException("Lexical error: " + r);
 			}
-		}catch (FileEndException e){													//读到文件末尾
+		}catch (FileEndException e){													// 读到文件末尾
 			if (sb.length() > 0) {
 				if(dfa.isFinal(curr)){
-					v.name = pre.type;
+					v.name = curr.type;
 					v.attr("value", sb.toString());
 				} else {
-					throw new RuntimeException("lexical error!" + sb.toString());
+					throw new RuntimeException("Lexical error: " + sb.toString());
 				}
 			} else 
 				return null;

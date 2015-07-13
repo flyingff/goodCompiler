@@ -17,9 +17,16 @@ import java.util.Map.Entry;
 public class AnalyzeTable implements Serializable{
     private static final long serialVersionUID = 8106377333742804836L;
 	private Map<Group, Action> analyzeTable = new HashMap<Group, Action>();				//分析表map
+	private Group gQuery = new Group(0, null);
 	AnalyzeTable(Map<Group, Action> analyzeTable) {
 	    this.analyzeTable = analyzeTable;
     }
+	
+	public Action query(int state, String input) {
+		gQuery.setFrom(state);
+		gQuery.setVia(input);
+		return analyzeTable.get(gQuery);
+	}
 	public static AnalyzeTable load(InputStream is){
 		AnalyzeTable table = null;
 		try {
@@ -42,7 +49,7 @@ public class AnalyzeTable implements Serializable{
 	}
 	public void show() {
 		for(Entry<Group, Action> ex : analyzeTable.entrySet()){
-			System.out.println("from :" + ex.getKey().getFrom() + 
+			System.out.println("from: " + ex.getKey().getFrom() + 
 					" via: " + ex.getKey().getVia() + " Action: " + ex.getValue());
 		}
 	}

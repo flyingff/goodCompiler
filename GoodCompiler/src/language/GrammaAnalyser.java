@@ -15,7 +15,7 @@ import java.util.Properties;
 import java.util.Set;
 
 public class GrammaAnalyser {
-	private static final String EPSLON = "_", TERMINATOR = "#", START = "S";
+	public static final String EPSLON = "_", TERMINATOR = "#", START = "S";
 	private Properties p;
 	private Map<String, Set<Production>> map = new HashMap<String, Set<Production>>();	// 左部相同的产生式集合
 	private List<Set<Item>> itemfamily = new ArrayList<>();								// 项目集规范族
@@ -23,7 +23,7 @@ public class GrammaAnalyser {
 	private Set<Item> psset = new HashSet<Item>();										// 所有项目的集合
 	private Set<String> vnset = new HashSet<String>();									// 非终结符集合
 	private Map<String, Set<String>> firstSet = new HashMap<String, Set<String>>();		// 所有非终结符的FIRST集合
-	private Map<String, Set<String>> followSet = new HashMap<String, Set<String>>();		// 所有非终结符的FOLLOW集合
+	private Map<String, Set<String>> followSet = new HashMap<String, Set<String>>();	// 所有非终结符的FOLLOW集合
 	private Map<Group, Integer> gotomap = new HashMap<Group, Integer>();				// GOTO转换表
 	private AnalyzeTable at;
 	public GrammaAnalyser(InputStream is) {
@@ -173,32 +173,32 @@ public class GrammaAnalyser {
 		Set<Map.Entry<String, Set<Production>>> entries = map.entrySet();
 		for(Entry<String, Set<Production>> ex : entries){
 			String vn = ex.getKey();
-			followSet.put(vn, new HashSet<String>());												// 初始化follow集
+			followSet.put(vn, new HashSet<String>());											// 初始化follow集
 			if (vn.equals(START)){
 				followSet.get(vn).add(TERMINATOR);
 			}
 		}
 		boolean isChanged = true;
 		while(isChanged){
-			isChanged = false;																	//标记follow集是否变化
+			isChanged = false;																	// 标记follow集是否变化
 			for(Entry<String, Set<Production>> ex : entries){
 				String left = ex.getKey();
 				for(Production p : ex.getValue()){
 					String[] right = p.getRight();
 					for(int i = 0; i < right.length; i++){
 						String tmp = right[i];													// 取出产生式右部第i个符号
-						if(vnset.contains(tmp)){	
+						if(vnset.contains(tmp)){												// 若为非终结符
 							Set<String> follow = followSet.get(tmp);
 							int followsize = follow.size();
-							if(i < right.length){												// 若为非终结符且不是右部最后一个符号
+							if(i < right.length){												
 								int x = i + 1;
 								while(x < right.length){										// 判断之后是否还有非终结符
-									if(!vnset.contains(right[x])){
+									if(!vnset.contains(right[x])){								// 若为终结符则终止循环
 										follow.add(right[x]);
 										break;
 									} else {
 										follow.addAll(firstSet.get(right[x]));
-										if(firstSet.get(right[x]).contains(EPSLON)){			// 若有且first集包含EPSLON
+										if(firstSet.get(right[x]).contains(EPSLON)){			// 若有且first集包含EPSLON,则查看下一个符号
 											follow.remove(EPSLON);
 											i++;
 										} else break;
@@ -312,10 +312,15 @@ public class GrammaAnalyser {
 		return key;
 	}
 	
-
+	/**
+	 * 将元素加入分析表
+	 * @param table
+	 * @param g
+	 * @param a
+	 */
 	private void tablePut(Map<Group, Action> table, Group g, Action a){
-		if (table.get(g) != null) {
-			System.err.println("WARNING: CONFLICT:");
+		if (table.get(g) != null) {															// 若已存在一条转移记录,则发生冲突
+			System.err.println("WARNING: CONFLICT:");										//出错
 			System.err.println("Existing: " + table.get(g));
 			System.err.println("Want to insert: " + a);
 			System.err.println("Position:" + g);
@@ -325,6 +330,12 @@ public class GrammaAnalyser {
 		table.put(g, a);
 	}
 	
+	/**
+	 * 根据当前状态和输入符号得到下一个状态
+	 * @param curr
+	 * @param via
+	 * @return next
+	 */
 	private int getNextState(int curr, String via){
 		int next = -1;
 		Integer ret = gotomap.get(new Group(curr, via));
@@ -333,9 +344,14 @@ public class GrammaAnalyser {
 		}
 		return next;
 	}
+	
+	/**
+	 * 构造SLR(1)分析表
+	 * @return
+	 */
 	private AnalyzeTable constructor(){
-		Map<Group, Action> table = new HashMap<>();
-		for(Entry<Group, Integer> ex : gotomap.entrySet()){
+		Map<Group, Action> table = new HashMap<>();											// 初始化分析表		
+		for(Entry<Group, Integer> ex : gotomap.entrySet()){									// 先遍历GOTO表,加入非终结符的GOTO动作
 			Group g = ex.getKey();
 			String via = g.getVia();
 			int nextState = ex.getValue(); 
@@ -345,12 +361,12 @@ public class GrammaAnalyser {
 				continue;
 			}
 		}
-		for(int i = 0; i < itemfamily.size(); i++){
+		for(int i = 0; i < itemfamily.size(); i++){											// 遍历每一个项目集中的每一个项目的右部
 			Set<Item> from = itemfamily.get(i);
 			for(Item ix : from){
 				int dotpos = ix.getDotPos();
-				int len = ix.getPd().getRight().length;
-				if(dotpos < len){
+				int len = ix.getPd().getRight().length;										// 根据每一个规则填充分析表			
+				if(dotpos < len){										
 					String v = ix.getPd().getRight()[dotpos];
 					int next = getNextState(i, v);
 					if(next != -1 && !vnset.contains(v)){
@@ -358,7 +374,7 @@ public class GrammaAnalyser {
 						Action a = new Action(Action.STEPINTO, next);
 						tablePut(table, t, a);
 					}
-				} else if(ix.getPd().getLeft().equals(START)){
+				} else if(ix.getPd().getLeft().equals(START)){								// 找到ACC出口 
 					Action a = new Action();
 					a.setP(ix.getPd());
 					tablePut(table, new Group(i, TERMINATOR), a);
@@ -383,7 +399,6 @@ public class GrammaAnalyser {
  * from表示状态编号
  * via表示文法符号
  * @author lxm
- *
  */
 class Group implements Serializable {
     private static final long serialVersionUID = 3969890776875195720L;
@@ -417,9 +432,7 @@ class Group implements Serializable {
 	@Override
     public boolean equals(Object obj) {
 		if(obj instanceof Group){
-			if(((Group) obj).from == this.from  && ((Group) obj).via == this.via){
-				return true;
-			}
+			return ((Group) obj).from == this.from  && ((Group) obj).via.equals(this.via);
 		}
 	    return false;
     }
