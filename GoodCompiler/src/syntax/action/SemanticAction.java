@@ -11,8 +11,8 @@ import syntax.SymbolTable;
  * }
  */
 public class SemanticAction {
-	protected SymbolTable st;
-	protected List<Quad> qlist;
+	protected SymbolTable st;															//符号表
+	protected List<Quad> qlist;															//四元式队列
 	public final void setSt(SymbolTable st) {
 	    this.st = st;
     }

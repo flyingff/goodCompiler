@@ -40,7 +40,14 @@ public class GrammaAnalyser {
 			String[] ss = ((String) x.getValue()).split("\\|");							// 用|提取每一右部
 			for(int i = 0;i < ss.length; i++){
 				Production p = new Production();
-				String[] str = ss[i].split("@");	
+				String[] str = ss[i].split("@");
+				if(str.length == 1){
+					p.setAction(null);
+				} else if(str.length == 2){
+					p.setAction(str[1].trim());												// 设置产生式的动作路径
+				} else {
+					throw new RuntimeException("Incorrect number of @: " + ss[i]);
+				}
 				String[] arr = str[0].trim().split(" *, *");							// 提取右部所有的文法符号											//  提取每一右部的执行动作的方法的路径
 				if(arr.length == 1 && arr[0].equals(EPSLON)){
 					p.setRight(new String[0]);
@@ -48,7 +55,6 @@ public class GrammaAnalyser {
 					p.setRight(arr);
 				}
 				vset.addAll(Arrays.asList(p.getRight()));								// 加入文法符号集合
-				p.setAction(str[1].trim());												// 设置产生式的动作路径
 				p.setLeft(left);														// 设置产生式的左部
 				vnset.add(left);
 				xset.add(p);								
