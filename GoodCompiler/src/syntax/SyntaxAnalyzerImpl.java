@@ -10,7 +10,7 @@ import java.util.Stack;
 
 import language.Action;
 import language.AnalyzeTable;
-import language.GrammaAnalyser;
+import language.GrammarAnalyser;
 import language.Production;
 import lexical.LexicalAnalyzer;
 import syntax.action.SemanticAction;
@@ -55,7 +55,7 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 		Action action;
 		sstate.push(0);																	// 初始状态压栈
 		V term = new V();
-		term.name = GrammaAnalyser.TERMINATOR;
+		term.name = GrammarAnalyser.TERMINATOR;
 		ssymbol.push(term);																// '#'压栈
 		V v = la.next();
 		V[] param;

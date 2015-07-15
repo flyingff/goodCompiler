@@ -14,7 +14,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
-public class GrammaAnalyser {
+public class GrammarAnalyser {
 	public static final String EPSLON = "_", TERMINATOR = "#", START = "S";
 	private Properties p;
 	private Map<String, Set<Production>> map = new HashMap<String, Set<Production>>();	// 左部相同的产生式集合
@@ -26,7 +26,7 @@ public class GrammaAnalyser {
 	private Map<String, Set<String>> followSet = new HashMap<String, Set<String>>();	// 所有非终结符的FOLLOW集合
 	private Map<Group, Integer> gotomap = new HashMap<Group, Integer>();				// GOTO转换表
 	private AnalyzeTable at;
-	public GrammaAnalyser(InputStream is) {
+	public GrammarAnalyser(InputStream is) {
 		p = new Properties();
 		try {
 			p.load(is);
@@ -81,7 +81,7 @@ public class GrammaAnalyser {
 	
 	public static void main(String[] args) throws IOException{
 		String savePath = "e:\\table1.atab";
-		AnalyzeTable at = new GrammaAnalyser(GrammaAnalyser.class.getResourceAsStream("gramma.properties")).getAnalyzeTable();
+		AnalyzeTable at = new GrammarAnalyser(GrammarAnalyser.class.getResourceAsStream("gramma.properties")).getAnalyzeTable();
 		at.show();
 		at.save(new FileOutputStream(savePath));
 		System.out.println("File saved at '" + savePath + "'.");
