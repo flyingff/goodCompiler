@@ -16,4 +16,10 @@ public interface SyntaxAnalyzer {
 	 * @return
 	 */
 	List<Quad> analyse();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	SymbolTable getSymbolTable();
 }

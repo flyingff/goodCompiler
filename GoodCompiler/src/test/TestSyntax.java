@@ -1,6 +1,7 @@
 package test;
 
 import java.io.FileInputStream;
+
 import java.io.FileOutputStream;
 
 import language.GrammarAnalyser;
@@ -19,7 +20,7 @@ public class TestSyntax {
 			TableReader ta = new TableReader(TestSyntax.class.getResourceAsStream("wordlist.properties"));
 			ta.getMat().saveTo(new FileOutputStream(automatPath));
 		}
-		GrammarAnalyser ga = new GrammarAnalyser(TestSyntax.class.getResourceAsStream("gramma.properties"));
+		GrammarAnalyser ga = new GrammarAnalyser(TestSyntax.class.getResourceAsStream("grammar.properties"));
 		ga.getAnalyzeTable().save(new FileOutputStream(atablePath));
 		
 		// start analyze
@@ -29,5 +30,6 @@ public class TestSyntax {
         SyntaxAnalyzer sa = new SyntaxAnalyzerImpl(new FileInputStream(atablePath));
         sa.setInput(la);
         sa.analyse();
+        System.out.println(sa.getSymbolTable());
     }
 }

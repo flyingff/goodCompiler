@@ -14,11 +14,12 @@ public class SymbolTable {
 		syms.put(name, sx);
 		return sx;
 	}
-}
-
-class Symbol {
-	public String name;
-	private final Map<String, Object> attr = new HashMap<String, Object>();
-	public void attr(String name, Object val){ attr.put(name, val); }
-	public Object attr(String name){ return attr.get(name);}
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		for(Symbol sx : syms.values()) {
+			sb.append(sx).append("\n");
+		}
+		return sb.toString();
+	}
 }
