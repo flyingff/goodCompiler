@@ -56,4 +56,33 @@ public class Action implements Serializable{
 			return "["+TYPENAME[type] + " target=" + state + "]";
 		} 
 	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((p == null) ? 0 : p.hashCode());
+		result = prime * result + state;
+		result = prime * result + type;
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Action other = (Action) obj;
+		if (p == null) {
+			if (other.p != null)
+				return false;
+		} else if (!p.equals(other.p))
+			return false;
+		if (state != other.state)
+			return false;
+		if (type != other.type)
+			return false;
+		return true;
+	}
 }

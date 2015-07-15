@@ -1,7 +1,6 @@
 package test;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import language.GrammarAnalyser;
@@ -13,10 +12,13 @@ import syntax.SyntaxAnalyzerImpl;
 
 public class TestSyntax {
 	public static void main(String[] args) throws Exception{
+		boolean wordChanged = false;
 		// generate
-		String automatPath = "e:\\syntaxtest.automat", atablePath = "e:\\syntaxtest.atable";
-		TableReader ta = new TableReader(TestSyntax.class.getResourceAsStream("wordlist.properties"));
-		ta.getMat().saveTo(new FileOutputStream(automatPath));
+		String automatPath = "d:\\syntaxtest.automat", atablePath = "d:\\syntaxtest.atable";
+		if (wordChanged) {
+			TableReader ta = new TableReader(TestSyntax.class.getResourceAsStream("wordlist.properties"));
+			ta.getMat().saveTo(new FileOutputStream(automatPath));
+		}
 		GrammarAnalyser ga = new GrammarAnalyser(TestSyntax.class.getResourceAsStream("gramma.properties"));
 		ga.getAnalyzeTable().save(new FileOutputStream(atablePath));
 		

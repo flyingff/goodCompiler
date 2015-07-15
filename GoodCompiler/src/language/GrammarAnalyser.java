@@ -64,14 +64,16 @@ public class GrammarAnalyser {
 		}
 		//  System.out.println(map.toString());
 		Set<Item> sItems = getItemSet(map);
-		System.out.println(sItems.toString());
-		System.out.println("文法符号:\n" + vset.toString());
-		System.out.println("非终结符集:\n" + vnset.toString());
-		Map<Group, Integer> mGotos = automat(sItems);
-		System.out.println("GOTO表:\n" +  mGotos.toString());
-		
-		System.out.println("FIRST SET:" + getFirstSet(map).toString());
-		System.out.println("FOLLOW SET:" + getFollowSet(map).toString());
+		//System.out.println(sItems.toString());
+		//System.out.println("文法符号:\n" + vset.toString());
+		//System.out.println("非终结符集:\n" + vnset.toString());
+		//Map<Group, Integer> mGotos = 
+		automat(sItems);
+		//System.out.println("GOTO表:\n" +  mGotos.toString());
+		getFirstSet(map);
+		getFollowSet(map);
+		//System.out.println("FIRST SET:" + .toString());
+		//System.out.println("FOLLOW SET:" +.toString());
 		at = constructor();
 	}
 	
@@ -253,7 +255,7 @@ public class GrammarAnalyser {
 				}
 			}
 		}
-		System.out.println("项目集规范族集合: \n" + itemfamily.toString());
+		//System.out.println("项目集规范族集合: \n" + itemfamily.toString());
 		return gotomap;
 	}
 	
@@ -325,8 +327,9 @@ public class GrammarAnalyser {
 	 * @param a
 	 */
 	private void tablePut(Map<Group, Action> table, Group g, Action a){
-		if (table.get(g) != null) {															// 若已存在一条转移记录,则发生冲突
-			System.err.println("WARNING: CONFLICT:");										//出错
+		Action ax = table.get(g);
+		if (ax != null && !ax.equals(a)) {													// 若已存在一条转移记录,则发生冲突
+			System.err.println("WARNING: CONFLICT:");										// 出错
 			System.err.println("Existing: " + table.get(g));
 			System.err.println("Want to insert: " + a);
 			System.err.println("Position:" + g);
