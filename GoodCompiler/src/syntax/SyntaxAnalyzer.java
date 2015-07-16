@@ -22,4 +22,6 @@ public interface SyntaxAnalyzer {
 	 * @return
 	 */
 	SymbolTable getSymbolTable();
+	
+	List<Quad> getQuad();
 }

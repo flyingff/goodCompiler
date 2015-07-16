@@ -3,6 +3,7 @@ package language;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +30,7 @@ public class GrammarAnalyser {
 	public GrammarAnalyser(InputStream is) {
 		p = new Properties();
 		try {
-			p.load(is);
+			p.load(new InputStreamReader(is, "utf-8"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -329,7 +330,7 @@ public class GrammarAnalyser {
 	private void tablePut(Map<Group, Action> table, Group g, Action a){
 		Action ax = table.get(g);
 		if (ax != null && !ax.equals(a)) {													// 若已存在一条转移记录,则发生冲突
-			System.err.println("WARNING: CONFLICT:");										// 出错
+			System.err.println("WARNING: CONFLICT on input " + g.getVia());					// 出错
 			System.err.println("Existing: " + table.get(g));
 			System.err.println("Want to insert: " + a);
 			System.err.println("Position:" + g);

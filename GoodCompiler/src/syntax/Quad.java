@@ -1,6 +1,7 @@
 package syntax;
 
 public class Quad {
+	public static final int STARTNUM = 100;
 	public int num;
 	public Object[] field = new Object[4];
 	@Override

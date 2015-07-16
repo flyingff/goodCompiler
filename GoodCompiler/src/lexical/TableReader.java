@@ -5,6 +5,7 @@ import static dfaautomat.DFAAutomat.EPSLON;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.EmptyStackException;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -47,7 +48,7 @@ public class TableReader {
 	public TableReader(InputStream is) {
 		p = new Properties();
 		try {
-			p.load(is);
+			p.load(new InputStreamReader(is, "utf-8"));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

@@ -161,4 +161,8 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
         }
 		}
 	}
+	@Override
+	public List<Quad> getQuad() {
+		return quadlist;
+	}
 }
