@@ -13,16 +13,18 @@ import syntax.SyntaxAnalyzerImpl;
 
 public class TestSyntax {
 	public static void main(String[] args) throws Exception{
-		boolean wordChanged = true;
+		boolean wordChanged = false;
+		boolean grammaChanged = true;
 		// generate
 		String automatPath = "d:\\syntaxtest.automat", atablePath = "d:\\syntaxtest.atable";
 		if (wordChanged) {
 			TableReader ta = new TableReader(TestSyntax.class.getResourceAsStream("wordlist.properties"));
 			ta.getMat().saveTo(new FileOutputStream(automatPath));
 		}
-		GrammarAnalyser ga = new GrammarAnalyser(TestSyntax.class.getResourceAsStream("grammar.properties"));
-		ga.getAnalyzeTable().save(new FileOutputStream(atablePath));
-		
+		if (grammaChanged) {
+			GrammarAnalyser ga = new GrammarAnalyser(TestSyntax.class.getResourceAsStream("grammar.properties"));
+			ga.getAnalyzeTable().save(new FileOutputStream(atablePath));
+		}
 		// start analyze
 		LexicalAnalyzer la;
         la = new LexicalAnalyzerImpl(new FileInputStream(automatPath));
