@@ -77,7 +77,44 @@ public class GrammarAnalyser {
 		//System.out.println("FOLLOW SET:" +.toString());
 		at = constructor();
 	}
-	
+	public String getBNFGrammar(){
+		StringBuilder sb = new StringBuilder();
+		List<BNFRecord> outList = new ArrayList<>();
+		Set<String> remaining = new HashSet<String>(vnset);
+		
+		dfsSearch(outList, remaining, START, 0);
+		
+		for(int i = 0; i < outList.size(); i++) {
+			BNFRecord br = outList.get(i);
+			for(Production px : map.get(br.vn)){
+				for(int k = 0; k < br.w; k++){
+					sb.append('\t');
+				}
+				sb.append(px.getLeft()).append(" ::= ");
+				for(String rx : px.getRight()) {
+					if (vnset.contains(rx)) {
+						sb.append("<").append(rx).append(">");
+					} else {
+						sb.append(rx);
+					}
+				}
+				sb.append("\n");
+			}
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
+	private void dfsSearch(List<BNFRecord> outList, Set<String> remaining, String curr, int w) {
+		outList.add(new BNFRecord(curr, w));
+		remaining.remove(curr);
+		for(Production px : map.get(curr)) {
+			for(String rx : px.getRight()) {
+				if (remaining.contains(rx)) {
+					dfsSearch(outList, remaining, rx, w + 1);
+				}
+			}
+		}
+	}
 	public AnalyzeTable getAnalyzeTable() {
 	    return at;
     }
@@ -501,5 +538,14 @@ class Item implements Serializable {
 	@Override
 	public int hashCode() {
 		return pd.hashCode() << 4 + dotPos;
+	}
+}
+
+class BNFRecord{
+	public String vn;
+	public int w;
+	public BNFRecord(String vn, int w) {
+		this.vn = vn;
+		this.w = w;
 	}
 }

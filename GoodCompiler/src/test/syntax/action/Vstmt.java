@@ -33,7 +33,7 @@ public class Vstmt extends SemanticAction {
 	 */
 	public void a4(V left, V[] right){
 		String name = (String) right[0].attr("value");
-		if (st.find(name) != null) {
+		if (st.lookup(name) != null) {
 			throw new RuntimeException("Duplicate variable: " + name);
 		}
 		Symbol s = st.add(name);
@@ -44,7 +44,7 @@ public class Vstmt extends SemanticAction {
 	}
 	public void a6(V left, V[] right){
 		String name = (String) right[0].attr("value");
-		if (st.find(name) != null) {
+		if (st.lookup(name) != null) {
 			throw new RuntimeException("Duplicate variable: " + name);
 		}
 		Symbol s = st.add(name);

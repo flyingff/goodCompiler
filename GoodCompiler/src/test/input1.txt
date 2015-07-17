@@ -4,14 +4,15 @@ char q;
 bool qz[2];
 int main(){
 	int a[2];
-	a[3] := 123 + 4;
+	a[3] := 123 + 4.2;
 	4 + 3;
 	3 + main(3, 2, 3);
 	while(3 > 5) {
 		if (6 == 5) {
-			while(a[3]==a[4]) {
+			while(a[3]==a[4] && a[7]<=a[8] ||~~ a9 + a10 <> a7) {
 				print(123);
 			}
 		}
 	}
 }
+int q(){}
