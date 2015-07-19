@@ -13,7 +13,7 @@ import syntax.SyntaxAnalyzerImpl;
 
 public class TestSyntax {
 	public static void main(String[] args) throws Exception{
-		boolean wordChanged = false;
+		boolean wordChanged = true;
 		boolean grammaChanged = true;
 		// generate
 		String automatPath = "d:\\syntaxtest.automat", atablePath = "d:\\syntaxtest.atable";
