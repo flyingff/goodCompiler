@@ -2,6 +2,7 @@ package test;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.lang.Thread.UncaughtExceptionHandler;
 
 import language.GrammarAnalyser;
 import lexical.LexicalAnalyzer;
@@ -13,7 +14,7 @@ import syntax.SyntaxAnalyzerImpl;
 
 public class TestSyntax {
 	public static void main(String[] args) throws Exception{
-		boolean wordChanged = true;
+		boolean wordChanged = false;
 		boolean grammaChanged = true;
 		// generate
 		String automatPath = "d:\\syntaxtest.automat", atablePath = "d:\\syntaxtest.atable";
@@ -31,6 +32,19 @@ public class TestSyntax {
 		LexicalAnalyzer la;
         la = new LexicalAnalyzerImpl(new FileInputStream(automatPath));
         la.load(LexicalTest.class.getResourceAsStream("input1.txt"));
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+        	@Override
+        	public void uncaughtException(Thread arg0, Throwable e) {
+        		Throwable t = e;
+        		while(t.getCause() != null) t = t.getCause();
+        		
+        		if (t instanceof RuntimeException) {
+        			System.err.println("Error at line " + la.getLine() + ", col " + la.getCol());
+        			System.err.println(t.getMessage());
+        		}
+        		t.printStackTrace();
+        	}
+        });
         SyntaxAnalyzer sa = new SyntaxAnalyzerImpl(new FileInputStream(atablePath));
         sa.setInput(la);
         sa.analyse();

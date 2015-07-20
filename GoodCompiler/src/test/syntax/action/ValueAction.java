@@ -1,9 +1,7 @@
 package test.syntax.action;
 
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import syntax.Quad;
 import syntax.Symbol;
@@ -12,16 +10,17 @@ import syntax.action.SemanticAction;
 
 /**
  * 值的属性为: value - Integer, Double或Symbol, 代表当前符号的值<br>
- * type - String,可能为INT, REAL, CHAR, BOOL
+ * 如果是数组左值，则附带属性为offset<br>
+ * type - String,可能为{@link test.syntax.action.ValueAction}.INT, REAL, CHAR, BOOL
  * @author FlyingFlameR
- *
  */
 public class ValueAction extends SemanticAction{
 	public static final String INT = "int", REAL = "real", CHAR = "char", BOOL="bool";
 	private static final String[] PREC = new String[]{BOOL, CHAR, INT, REAL};
+
 	public void a1(V left, V[] right){
 		String val = (String) right[0].attr("value");
-		if (val.indexOf('.') != -1) {
+		if (val.indexOf('.') == -1) {
 			// int
 			left.attr("value",Integer.parseInt(val));
 			left.attr("type", INT);
@@ -33,8 +32,8 @@ public class ValueAction extends SemanticAction{
 	}
 	// pass function
 	public void pass(V left, V[] right){
-		left.attr("value", right[1].attr("value"));
-		left.attr("type", right[1].attr("type"));
+		left.attr("value", right[0].attr("value"));
+		left.attr("type", right[0].attr("type"));
 	}
 	// 值 = 左值
 	public void a5(V left, V[] right){
@@ -52,32 +51,53 @@ public class ValueAction extends SemanticAction{
 	}
 	// 自增值=++,左值
 	public void a6(V left, V[] right){
-		// TODO consider array
-		Symbol sx = (Symbol)right[1].attr("value"), temp = st.getTemp();
-		Quad qx = newQuad();
-		qx.field("+", sx, 1, temp);
-		qx = newQuad();
-		qx.field(":=", temp, null, sx);
-		st.releaseTemp(temp);
-		
-		left.attr("type", sx.attr("type"));
-		left.attr("value", sx);
+		Symbol sx = (Symbol)right[1].attr("value");
+		Object offset = right[1].attr("offset");
+		if(offset == null) {
+			Symbol temp = st.getTemp();
+			Quad qx = newQuad();
+			qx.field("+", sx, 1, temp);
+			qx = newQuad();
+			qx.field(":=", temp, null, sx);
+			st.releaseTemp(temp);
+			
+			left.attr("type", sx.attr("type"));
+			left.attr("value", sx);
+		} else {
+			Symbol tmp1 = st.getTemp(), tmp2 = st.getTemp();
+			newQuad().field("=[]", sx.name + "[" + offset + "]", null, tmp1);
+			newQuad().field("+", tmp1, 1, tmp2);
+			newQuad().field("[]=", tmp2, null, sx.name + "[" + offset + "]");
+			st.releaseTemp(tmp1);
+			left.attr("type", sx.attr("type"));
+			left.attr("value", tmp2);
+		}
 	}
 	
 	// 自增值=左值,++
 	public void a7(V left, V[] right){
-		// TODO consider array
-		Symbol sx = (Symbol)right[1].attr("value"), temp = st.getTemp(), temp2 = st.getTemp();
-		Quad qx = newQuad();
-		qx.field(":=", sx, null, temp2);
-		qx = newQuad();
-		qx.field("+", sx, 1, temp);
-		qx = newQuad();
-		qx.field(":=", temp, null, sx);
-		st.releaseTemp(temp);
-		
-		left.attr("type", sx.attr("type"));
-		left.attr("value", temp2);
+		Symbol sx = (Symbol)right[0].attr("value");
+		Object offset = right[1].attr("offset");
+		if (offset == null) {
+			Symbol temp = st.getTemp(), temp2 = st.getTemp();
+			Quad qx = newQuad();
+			qx.field(":=", sx, null, temp2);
+			qx = newQuad();
+			qx.field("+", sx, 1, temp);
+			qx = newQuad();
+			qx.field(":=", temp, null, sx);
+			st.releaseTemp(temp);
+			left.attr("type", sx.attr("type"));
+			left.attr("value", temp2);
+		} else {
+			Symbol tmp1 = st.getTemp(), tmp2 = st.getTemp();
+			newQuad().field("=[]", sx.name + "[" + offset + "]", null, tmp1);
+			newQuad().field("+", tmp1, 1, tmp2);
+			newQuad().field("[]=", tmp2, null, sx.name + "[" + offset + "]");
+			st.releaseTemp(tmp2);
+			left.attr("type", sx.attr("type"));
+			left.attr("value", tmp1);
+		}
 	}
 	//乘积值 = 乘积值,*,自增值
 	public void a8(V left, V[] right){
@@ -108,8 +128,8 @@ public class ValueAction extends SemanticAction{
 		Quad qx = newQuad();
 		Object val = right[2].attr("value");
 		Symbol leftv = (Symbol) right[0].attr("value");
-		Object offset = leftv.attr("offset");
-		qx.field(offset == null? ":=": "[]=", val, null, offset == null?leftv : leftv.name + "[" + offset + "]");
+		Object offset = right[0].attr("offset");
+		qx.field(offset == null? ":=": "[]=", val, null, offset == null?leftv.name : leftv.name + "[" + offset + "]");
 		st.releaseTemp(offset);
 		left.attr("value", val);
 		left.attr("type", ((Symbol)leftv).attr("type"));
@@ -161,13 +181,15 @@ public class ValueAction extends SemanticAction{
 		int currdim = (Integer)right[0].attr("currdim") + 1;
 		Object offset = right[0].attr("offset"), dimx = right[2].attr("value");
 		Symbol s = (Symbol) right[0].attr("value");
+		
+		@SuppressWarnings("unchecked")
 		List<Integer> dim = ((List<Integer>)s.attr("dim"));
 		if(dim.size() < currdim) {
 			throw new RuntimeException("Array Dimension out of range at " + s + ": " + currdim);
 		}
 		if (REAL.equals(right[2].attr("type"))) throw new RuntimeException("Array dimension cannot be a real number:" + dimx);
 		Symbol tmp = st.getTemp(), tmp2 = st.getTemp();
-		newQuad().field("*", dim.get(currdim - 2), offset, tmp2);
+		newQuad().field("*", dim.get(currdim - 1), offset, tmp2);
 		newQuad().field("+", tmp2, dimx, tmp);
 		st.releaseTemp(dimx);
 		st.releaseTemp(tmp2);
@@ -184,6 +206,8 @@ public class ValueAction extends SemanticAction{
 		if(func == null) {
 			throw new RuntimeException("Undefined function: " + name);
 		}
+		
+		@SuppressWarnings("unchecked")
 		List<Object> paras = (List<Object>) right[2].attr("paras");
 		if(paras != null){
 			for(Object ox : paras){
@@ -204,6 +228,7 @@ public class ValueAction extends SemanticAction{
 	}
 	// 实参列表=实参列表,com,实参@test.syntax.action.ValueAction.a18
 	public void a18(V left, V[] right) {
+		@SuppressWarnings("unchecked")
 		List<Object> paras = (List<Object>)right[0].attr("paras");
 		if(paras == null) {
 			throw new RuntimeException("Lack of Parameter before ','.");
@@ -217,7 +242,7 @@ public class ValueAction extends SemanticAction{
 	}
 	public String getResultType(String t1, String t2){
 		int p1 = -1, p2 = -1;
-		for(int i = 0; i < 10; i++) {
+		for(int i = 0; i < PREC.length; i++) {
 			if (PREC[i].equals(t1)) {
 				p1 = i;
 			}

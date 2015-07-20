@@ -2,17 +2,16 @@ int _adssssdds333443sasdsjdkhgkjtgyu547futfr5g5h89, x, y[4,2 ,1];
 real _0zz [3, 2];
 char q;
 bool qz[2];
-int main(){
-	int a[2];
-	a[3] := 123 + 4.2;
-	4 + 3;
-	3 + main(3, 2, 3);
-	while(3 > 5) {
-		if (6 == 5) {
-			while(a[3]==a[4] && a[7]<=a[8] ||~~ a9 + a10 <> a7) {
-				print(123);
-			}
-		}
+int a[3,4, 5];
+while(q > 2){
+	if(q < 1) {
+		++q;
+	} else {
+		q := 3;
 	}
+	q++;
 }
+a[1,5 + 2, 3]:= 3 + 2 + 6 * 3;
+q := a[3,2,4];
+
 int q(){}

@@ -20,4 +20,7 @@ public interface LexicalAnalyzer {
 	 * @return
 	 */
 	V next();
+	
+	int getLine();
+	int getCol();
 }

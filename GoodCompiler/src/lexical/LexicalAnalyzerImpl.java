@@ -20,11 +20,17 @@ import syntax.V;
  */
 public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 	private static final Set<Character> BLANKCH = new HashSet<Character>(Arrays.asList(' ','\t','\n','\r'));//空白字符集
+	private int line = 1, col = 0;
 	private BufferedReader br;															//从输入流读取字符的缓冲区
 	private int buf = -1;																//缓冲区
 	private DFAAutomat dfa;																//DFA自动机对象
 	private StringBuffer sb = new StringBuffer();										//保存未识别完的输入字符串
-	
+	public int getLine() {
+		return line;
+	}
+	public int getCol() {
+		return col;
+	}
 	/**
 	 * 获得DFA对象
 	 * @param is
@@ -54,6 +60,10 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 			// find a non-blank char
 			char r = getChar();
 			while(BLANKCH.contains(r)) {												//找到非空字符
+				if(r == '\n') {
+					line++;
+					col = 0;
+				}
 				r = getChar();
 			}
 			// enable circle	
@@ -70,7 +80,7 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 				v.name = pre.type;
 				v.attr("value", sb.toString());
 			} else {
-				throw new RuntimeException("Lexical error: " + r);
+				throw new RuntimeException("Lexical error near: " + sb.toString() + r);
 			}
 		}catch (FileEndException e){													// 读到文件末尾
 			if (sb.length() > 0) {
@@ -78,7 +88,7 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 					v.name = curr.type;
 					v.attr("value", sb.toString());
 				} else {
-					throw new RuntimeException("Lexical error: " + sb.toString());
+					throw new RuntimeException("Lexical error near: " + sb.toString());
 				}
 			} else 
 				return null;
@@ -101,6 +111,9 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 			int read;
 			if((read = br.read()) > -1){
 				ch = (char) read;
+				if(ch != '\n' && ch != '\r') {
+					col++;
+				}
 			} else {
 				throw new FileEndException();
 			}

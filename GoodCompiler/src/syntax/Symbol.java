@@ -12,4 +12,19 @@ public class Symbol {
 	public String toString() {
 		return "[" + name + ": " + attr.toString() + "]";
 	}
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof Symbol) {
+			if (name!= null) {
+				return name.equals(((Symbol) obj).name);
+			} else {
+				return ((Symbol) obj).name == null;
+			}
+		}
+		return false;
+	}
 }

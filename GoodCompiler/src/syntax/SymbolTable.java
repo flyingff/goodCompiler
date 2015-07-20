@@ -8,20 +8,35 @@ import java.util.Set;
 
 public class SymbolTable {
 	private final Map<String, Symbol> syms = new HashMap<>(), funcs = new HashMap<>();
+	private Map<String, Symbol> localSyms = null;
 	private Set<Symbol> temp = new HashSet<>(), pool = new HashSet<>();
 	public Symbol lookup(String name){
+		if(localSyms != null) {
+			Symbol sx = localSyms.get(name);
+			if (sx != null) return sx;
+		}
 		return syms.get(name);
 	}
-	public Symbol add(String name){
+	public Symbol lookupLocal(String name) {
+		if (localSyms != null) {
+			return localSyms.get(name);
+		}
+		return null;
+	}
+	public Symbol add(String name) {
 		Symbol sx = new Symbol();
 		sx.name = name;
-		syms.put(name, sx);
+		if (localSyms == null) { 
+			syms.put(name, sx);
+		} else {
+			localSyms.put(name, sx);
+		}
 		return sx;
 	}
 	public Symbol getTemp(){
 		Symbol sx;
 		if (pool.isEmpty()) {
-			sx = new Symbol();
+			sx = new TempSymbol();
 			sx.name = "T" + temp.size();
 		} else {
 			Iterator<Symbol> itx = pool.iterator();
@@ -32,7 +47,7 @@ public class SymbolTable {
 		return sx;
 	}
 	public void releaseTemp(Object s) {
-		if (s instanceof Symbol) {
+		if (s instanceof TempSymbol) {
 			if(temp.remove(s)){
 				pool.add((Symbol)s);
 			}
@@ -52,6 +67,16 @@ public class SymbolTable {
 	public Symbol lookupFunc(String name){
 		return funcs.get(name);
 	}
+	public void enterFunc() {
+		if(localSyms != null) {
+			localSyms = new HashMap<>();
+		}
+	}
+	public Map<String, Symbol> exitFunc(){
+		Map<String, Symbol> ret = localSyms;
+		localSyms = null;
+		return ret;
+	}
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
@@ -63,5 +88,16 @@ public class SymbolTable {
 			sb.append(sx).append("\n");
 		}
 		return sb.toString();
+	}
+}
+
+class TempSymbol extends Symbol{
+	@Override
+	public void attr(String name, Object o) {
+		throw new RuntimeException("Cannot put attribute into TEMP variable.");
+	}
+	@Override
+	public String toString() {
+		return "$" + name;
 	}
 }
