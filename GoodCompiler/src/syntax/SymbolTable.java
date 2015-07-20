@@ -31,9 +31,11 @@ public class SymbolTable {
 		temp.add(sx);
 		return sx;
 	}
-	public void releaseTemp(Symbol s) {
-		if(temp.remove(s)){
-			pool.add(s);
+	public void releaseTemp(Object s) {
+		if (s instanceof Symbol) {
+			if(temp.remove(s)){
+				pool.add((Symbol)s);
+			}
 		}
 	}
 	public boolean isTemp(Symbol s) {

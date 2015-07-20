@@ -51,16 +51,21 @@ public class Vstmt extends SemanticAction {
 		left.attr("symbol", s);
 		List<Integer> dim;
 		s.attr("dim", dim = new ArrayList<Integer>());
-		dim.add((Integer)right[2].attr("value"));
+		String x = (String)right[2].attr("value");
+		if (x.indexOf('.')!= -1) {
+			throw new RuntimeException("Array dimension can only be integer: " + x);
+		}
+		dim.add(Integer.parseInt(x));
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void a7(V left, V[] right){
 		List<Integer> dim = (List<Integer>)(((Symbol)(right[0].attr("symbol"))).attr("dim"));
-		dim.add((Integer)right[2].attr("value"));
+		String x = (String)right[2].attr("value");
+		if (x.indexOf('.')!= -1) {
+			throw new RuntimeException("Array dimension can only be integer: " + x);
+		}
+		dim.add(Integer.parseInt(x));
 		left.attr("symbol", right[0].attr("symbol"));
-	}
-	public void a8(V left, V[] right){
-		left.attr("value", Integer.parseInt((String)right[0].attr("value")));
 	}
 }

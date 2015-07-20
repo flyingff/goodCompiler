@@ -25,5 +25,10 @@ public class SemanticAction {
 	public final void setQlist(List<Quad> qlist) {
 	    this.qlist = qlist;
     }
-	
+	public final Quad getQuad(int num){
+		return qlist.get(num - Quad.STARTNUM);
+	}
+	public final int nextQuad(){
+		return qlist.size() + Quad.STARTNUM;
+	}
 }
