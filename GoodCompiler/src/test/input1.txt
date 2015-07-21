@@ -3,15 +3,18 @@ real _0zz [3, 2];
 char q;
 bool qz[2];
 int a[3,4, 5];
-while(q > 2){
-	if(q < 1) {
-		++q;
-	} else {
-		q := 3;
+int q(int n){
+	int x;
+	while(q > 2){
+		if(q < 1) {
+			++q;
+		} else {
+			q := 3;
+		}
+		q++;
 	}
-	q++;
+	return 0;
 }
 a[1,5 + 2, 3]:= 3 + 2 + 6 * 3;
 q := a[3,2,4];
 
-int q(){}

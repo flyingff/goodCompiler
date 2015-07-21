@@ -68,8 +68,10 @@ public class SymbolTable {
 		return funcs.get(name);
 	}
 	public void enterFunc() {
-		if(localSyms != null) {
+		if(localSyms == null) {
 			localSyms = new HashMap<>();
+		} else {
+			throw new RuntimeException("Cannot define function within a function.");
 		}
 	}
 	public Map<String, Symbol> exitFunc(){

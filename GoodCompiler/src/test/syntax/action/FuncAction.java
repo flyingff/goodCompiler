@@ -11,13 +11,15 @@ import syntax.action.SemanticAction;
 public class FuncAction extends SemanticAction {
 	// 函数声明语句=函数头,{,局部语句组或空@test.syntax.action.FuncAction.f1
 	public void f1(V left, V[] right) {
-
+		Symbol s = (Symbol) right[0].attr("func");
+		s.attr("localVar", st.exitFunc());
 	}
 	// 函数头=类型和函数名,(,形式参数列表,)@test.syntax.action.FuncAction.f2
 	public void f2(V left, V[] right) {
 		Symbol s = (Symbol) right[0].attr("func");
 		s.attr("parlist", right[2].attr("parlist"));
-		
+		s.attr("addr", nextQuad());
+		left.attr("func", s);
 	}
 	// 类型和函数名=类型,id@test.syntax.action.FuncAction.f17
 	public void f17(V left, V[] right) {
@@ -26,7 +28,7 @@ public class FuncAction extends SemanticAction {
 			throw new RuntimeException("Duplicate function declaration: " + funcName);
 		}
 		Symbol s = st.addFunc(funcName);
-		s.attr("type", right[0].attr("value"));
+		s.attr("type", right[0].attr("type"));
 		st.enterFunc();
 		left.attr("func", s);
 	}
@@ -53,17 +55,21 @@ public class FuncAction extends SemanticAction {
 	}
 	// 形式参数=类型,id@test.syntax.action.FuncAction.f5
 	public void f5(V left, V[] right) {
-		left.attr("type", right[0].attr("value"));
+		left.attr("type", right[0].attr("type"));
 		left.attr("name", right[1].attr("value"));
 	}
+	
 	// 局部语句组或空=局部语句组,}@test.syntax.action.FuncAction.f6
 	public void f6(V left, V[] right) {
-		
+		if(right[0].attr("nextq") != null)
+			backPatch((Integer)right[0].attr("chain"), (Integer)right[0].attr("nextq"));
 	}
 	// 局部语句组=局部语句@test.syntax.action.FuncAction.f7
 	public void f7(V left, V[] right) {
-		
+		left.attr("chain", right[0].attr("chain"));
+		left.attr("nextq", nextQuad());
 	}
+	
 	// 局部语句组=局部语句组,局部语句@test.syntax.action.FuncAction.f8
 	public void f8(V left, V[] right) {
 		if(right[1].attr("exe") != null) {
@@ -72,6 +78,12 @@ public class FuncAction extends SemanticAction {
 		} else {
 			left.attr("chain", right[0].attr("chain"));
 		}
+		left.attr("nextq", nextQuad());
+	}
+	// 局部语句=return语句@test.syntax.action.FuncAction.f19
+	public void f19(V left, V[] right) {
+		left.attr("exe", 1);
+		left.attr("chain", right[0].attr("chain"));
 		left.attr("nextq", nextQuad());
 	}
 	// 局部语句=执行语句@test.syntax.action.FuncAction.f9
@@ -86,27 +98,51 @@ public class FuncAction extends SemanticAction {
 	}
 	// 局部声明部分=类型,局部声明元@test.syntax.action.FuncAction.f11|
 	public void f11(V left, V[] right) {
-		
+		String type = (String) right[0].attr("type");
+		Symbol s = st.add((String) right[1].attr("name"));
+		s.attr("dim", right[1].attr("dim"));
+		s.attr("type", type);
+		left.attr("type", type);
 	}
 	// 局部声明部分=局部声明部分,com,局部声明元@test.syntax.action.FuncAction.f12
 	public void f12(V left, V[] right) {
-		
+		String type = (String) right[0].attr("type");
+		Symbol s = st.add((String) right[2].attr("name"));
+		s.attr("dim", right[2].attr("dim"));
+		s.attr("type", type);
+		left.attr("type", type);
 	}
 	// 局部声明元=id@test.syntax.action.FuncAction.f13
 	public void f13(V left, V[] right) {
-		
+		left.attr("name", right[0].attr("value"));
 	}
 	// 局部声明元=局部数组参数表,]@test.syntax.action.FuncAction.f14
 	public void f14(V left, V[] right) {
-		
+		left.attr("name", right[0].attr("name"));
+		left.attr("dim", right[0].attr("dim"));
 	}
 	// 局部数组参数表=id,[,number@test.syntax.action.FuncAction.f15
 	public void f15(V left, V[] right) {
-		
+		left.attr("name",right[0].attr("value"));
+		List<Integer> dim = new ArrayList<>();
+		String val = (String) right[2].attr("value");
+		if(val.indexOf(".") != -1) {
+			throw new RuntimeException("Array Dimension can only be integer: " + val);
+		} 
+		dim.add(Integer.parseInt(val));
+		left.attr("dim", dim);
 	}
-	// 局部数组参数表=局部数组参数表,com,值@test.syntax.action.FuncAction.f16
+	// 局部数组参数表=局部数组参数表,com,number@test.syntax.action.FuncAction.f16
 	public void f16(V left, V[] right) {
-		
+		@SuppressWarnings("unchecked")
+		List<Integer> dim = (List<Integer>) right[0].attr("dim");
+		String val = (String) right[2].attr("value");
+		if(val.indexOf(".") != -1) {
+			throw new RuntimeException("Array Dimension can only be integer: " + val);
+		} 
+		dim.add(Integer.parseInt(val));
+		left.attr("name", right[0].attr("name"));
+		left.attr("dim", dim);
 	}
 	// return语句=return,值,semi@test.syntax.action.FuncAction.f18
 	public void f18(V left, V[] right) {
