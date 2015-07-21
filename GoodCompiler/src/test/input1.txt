@@ -4,7 +4,7 @@ char q;
 bool qz[2];
 int a[3,4, 5];
 int q(int n){
-	int x;
+	int x[3];
 	while(q > 2){
 		if(q < 1) {
 			++q;
@@ -13,8 +13,12 @@ int q(int n){
 		}
 		q++;
 	}
+	int a2;
+	a2++;
+	
 	return 0;
 }
+q(1);
 a[1,5 + 2, 3]:= 3 + 2 + 6 * 3;
 q := a[3,2,4];
 

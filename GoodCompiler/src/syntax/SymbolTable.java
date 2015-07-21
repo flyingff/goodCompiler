@@ -3,7 +3,9 @@ package syntax;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 public class SymbolTable {
@@ -79,15 +81,36 @@ public class SymbolTable {
 		localSyms = null;
 		return ret;
 	}
+	@SuppressWarnings("unchecked")
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		for(Symbol sx : syms.values()) {
-			sb.append(sx).append("\n");
+			sb.append("\t").append(sx.details()).append("\n");
 		}
 		sb.append("Functions:\n");
 		for(Symbol sx : funcs.values()) {
-			sb.append(sx).append("\n");
+			sb.append('\t').append(sx.name).append(": RetType = ").append(sx.attr("type")).
+				append(",BaseAddr = ").append(sx.attr("addr")).append(", [Parameters: ");
+			List<Symbol> parlist = (List<Symbol>)sx.attr("parlist");
+			if(parlist != null) {
+				for(Symbol syx : parlist) {
+					sb.append(syx.details()).append(", ");
+				}
+				sb.setLength(sb.length() - 2);
+			} else {
+				sb.append("No parameter");
+			}
+			sb.append("], [LocalVariables: ");
+			boolean hasVariable = false;
+			for(Entry<String, Symbol> ex: ((Map<String, Symbol>)sx.attr("localVar")).entrySet()) {
+				sb.append(ex.getValue().details()).append(", ");
+				hasVariable = true;
+			}
+			if(hasVariable)
+				sb.setLength(sb.length() - 2);
+			sb.append("]");
+			//.append(sx.attr("parlist")).append("\n");
 		}
 		return sb.toString();
 	}

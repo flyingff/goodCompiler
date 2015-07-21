@@ -13,13 +13,16 @@ public class FuncAction extends SemanticAction {
 	public void f1(V left, V[] right) {
 		Symbol s = (Symbol) right[0].attr("func");
 		s.attr("localVar", st.exitFunc());
+		backPatch((Integer)right[0].attr("skip"), nextQuad());
 	}
 	// 函数头=类型和函数名,(,形式参数列表,)@test.syntax.action.FuncAction.f2
 	public void f2(V left, V[] right) {
 		Symbol s = (Symbol) right[0].attr("func");
 		s.attr("parlist", right[2].attr("parlist"));
-		s.attr("addr", nextQuad());
 		left.attr("func", s);
+		left.attr("skip", nextQuad());
+		newQuad().field("j");
+		s.attr("addr", nextQuad());
 	}
 	// 类型和函数名=类型,id@test.syntax.action.FuncAction.f17
 	public void f17(V left, V[] right) {
@@ -36,7 +39,7 @@ public class FuncAction extends SemanticAction {
 	public void f3(V left, V[] right) {
 		List<Symbol> parlist = new ArrayList<>();
 		Symbol s = st.add((String)right[0].attr("name"));
-		s.attr("type", right[0].attr("name"));
+		s.attr("type", right[0].attr("type"));
 		parlist.add(s);
 		left.attr("parlist", parlist);
 	}
@@ -100,14 +103,19 @@ public class FuncAction extends SemanticAction {
 	public void f11(V left, V[] right) {
 		String type = (String) right[0].attr("type");
 		Symbol s = st.add((String) right[1].attr("name"));
-		s.attr("dim", right[1].attr("dim"));
+		if(right[1].attr("dim") != null)
+			s.attr("dim", right[1].attr("dim"));
 		s.attr("type", type);
 		left.attr("type", type);
 	}
 	// 局部声明部分=局部声明部分,com,局部声明元@test.syntax.action.FuncAction.f12
 	public void f12(V left, V[] right) {
 		String type = (String) right[0].attr("type");
-		Symbol s = st.add((String) right[2].attr("name"));
+		String name = (String) right[2].attr("name");
+		if(st.lookupLocal(name) != null) {
+			throw new RuntimeException("Dupilicate local variable: " + name);
+		}
+		Symbol s = st.add(name);
 		s.attr("dim", right[2].attr("dim"));
 		s.attr("type", type);
 		left.attr("type", type);

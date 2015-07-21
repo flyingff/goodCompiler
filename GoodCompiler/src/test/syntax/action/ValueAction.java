@@ -218,7 +218,7 @@ public class ValueAction extends SemanticAction{
 				}
 			}
 		}
-		newQuad().field("call", null, null, func);
+		newQuad().field("call", null, null, func + "@" + func.attr("addr"));
 	}
 	// 实参列表=实参@test.syntax.action.ValueAction.a17
 	public void a17(V left, V[] right){

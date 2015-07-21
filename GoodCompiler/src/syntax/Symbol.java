@@ -10,6 +10,9 @@ public class Symbol {
 	public Object attr(String name){ return attr.get(name);}
 	@Override
 	public String toString() {
+		return name;
+	}
+	public String details(){
 		return "[" + name + ": " + attr.toString() + "]";
 	}
 	@Override
