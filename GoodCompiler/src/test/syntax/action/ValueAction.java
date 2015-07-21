@@ -30,6 +30,11 @@ public class ValueAction extends SemanticAction{
 			left.attr("type", REAL);
 		}
 	}
+	// 元值=(,值,)@test.syntax.action.ValueAction.a2
+	public void a2(V left, V[] right){
+		left.attr("type", right[1].attr("type"));
+		left.attr("value", right[1].attr("value"));
+	}
 	// pass function
 	public void pass(V left, V[] right){
 		left.attr("value", right[0].attr("value"));

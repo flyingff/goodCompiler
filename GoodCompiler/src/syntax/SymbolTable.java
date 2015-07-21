@@ -109,7 +109,7 @@ public class SymbolTable {
 			}
 			if(hasVariable)
 				sb.setLength(sb.length() - 2);
-			sb.append("]");
+			sb.append("]\n");
 			//.append(sx.attr("parlist")).append("\n");
 		}
 		return sb.toString();
