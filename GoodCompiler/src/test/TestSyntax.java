@@ -31,7 +31,7 @@ public class TestSyntax {
 		// start analyze
 		LexicalAnalyzer la;
         la = new LexicalAnalyzerImpl(new FileInputStream(automatPath));
-        la.load(LexicalTest.class.getResourceAsStream("input1.txt"));
+        la.load(LexicalTest.class.getResourceAsStream("input4.txt"));
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
         	@Override
         	public void uncaughtException(Thread arg0, Throwable e) {

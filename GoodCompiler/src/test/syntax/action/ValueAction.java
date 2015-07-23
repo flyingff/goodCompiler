@@ -142,7 +142,7 @@ public class ValueAction extends SemanticAction{
 	// 求值语句=值,semi@test.syntax.action.ValueAction.a11
 	public void a11(V left, V[] right){
 		Object val = right[0].attr("value");
-		st.releaseTemp((Symbol)val);
+		st.releaseTemp(val);
 	}
 	// 左值 = id@test.syntax.action.ValueAction.a12
 	public void a12(V left, V[] right){
