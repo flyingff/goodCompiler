@@ -125,6 +125,17 @@ public class ValueAction extends SemanticAction{
 		Quad qx = newQuad();
 		qx.field("+", p1, p2, temp);
 		st.releaseTemp((Symbol)p1);
+		st.releaseTemp(p2);
+		left.attr("value", temp);
+		left.attr("type", getResultType((String)right[0].attr("type"), (String)right[2].attr("type")));
+	}
+	public void a21(V left, V[] right){
+		Object p1 = right[0].attr("value"), p2 = right[2].attr("value");
+		Symbol temp = st.getTemp();
+		Quad qx = newQuad();
+		qx.field("-", p1, p2, temp);
+		st.releaseTemp((Symbol)p1);
+		st.releaseTemp(p2);
 		left.attr("value", temp);
 		left.attr("type", getResultType((String)right[0].attr("type"), (String)right[2].attr("type")));
 	}

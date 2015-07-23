@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * SLR(1)分析表,记录当前状态,输入符号和执行动作
@@ -16,11 +17,18 @@ import java.util.Map.Entry;
  */
 public class AnalyzeTable implements Serializable{
     private static final long serialVersionUID = 8106377333742804836L;
-	private Map<Group, Action> analyzeTable = new HashMap<Group, Action>();				//分析表map
+	private Map<Group, Action> analyzeTable = new HashMap<Group, Action>();				// 分析表map
 	private Group gQuery = new Group(0, null);
+	private Set<String> vtset = null;									// 
 	AnalyzeTable(Map<Group, Action> analyzeTable) {
 	    this.analyzeTable = analyzeTable;
     }
+	public void setVT(Set<String> vt) {
+		this.vtset = vt;
+	}
+	public Set<String> getVT(){
+		return vtset;
+	}
 	
 	public Action query(int state, String input) {
 		gQuery.setFrom(state);

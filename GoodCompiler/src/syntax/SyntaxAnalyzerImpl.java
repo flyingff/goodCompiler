@@ -4,8 +4,10 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import language.Action;
@@ -66,7 +68,27 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 			String input = v.name;														// 当前输入
 			action = at.query(currState, input);										// 获得对于的动作
 			if (action == null){ 
-				throw new RuntimeException("Syntax error at: " + v.attr("value"));
+				StringBuffer err = new StringBuffer();
+				err.append("SYNTAX ERROR - Unexpected symbol: ").append(v.attr("value"));
+				Set<String> proposal = new HashSet<>();
+				for(String vtx : at.getVT()) {
+					Action ax = at.query(currState, vtx);
+					if(ax == null) continue;
+					if(ax.getType() == Action.REDUCTION) {
+						int len = ax.getP().getRight().length;
+						int nextState = sstate.get(sstate.size() - 1 - len);
+						Action ax2 = at.query(nextState, ax.getP().getLeft());
+						if(ax2 == null || ax2.getType() != Action.GOTO) {
+							continue;
+						}
+						if(at.query(ax2.getState(), vtx) == null) {
+							continue;
+						}
+					}
+					proposal.add(vtx);
+				}
+				err.append("\nExpect these symbols:").append(proposal);
+				throw new RuntimeException(err.toString());
 			}
 			// 根据不同类型执行不同的动作
 			switch (action.getType()) {

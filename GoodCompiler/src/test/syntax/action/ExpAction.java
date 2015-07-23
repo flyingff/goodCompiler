@@ -17,12 +17,12 @@ public class ExpAction extends SemanticAction{
 	}
 	// 与或值=与前缀,非值@test.syntax.action.ExpAction.e2
 	public void e2(V left, V[] right){
-		 left.attr("FC", merge((Integer)right[0].attr("FC"), (Integer)right[2].attr("FC")));
+		 left.attr("FC", merge((Integer)right[0].attr("FC"), (Integer)right[1].attr("FC")));
 		 left.attr("TC", right[1].attr("TC"));
 	}
 	// 与或值 =或前缀,非值@test.syntax.action.ExpAction.e3 
 	public void e3(V left, V[] right){
-		 left.attr("TC", merge((Integer)right[0].attr("TC"), (Integer)right[2].attr("TC")));
+		 left.attr("TC", merge((Integer)right[0].attr("TC"), (Integer)right[1].attr("TC")));
 		 left.attr("FC", right[1].attr("FC"));
 	}
 	// 与前缀=与或值,and@test.syntax.action.ExpAction.e11

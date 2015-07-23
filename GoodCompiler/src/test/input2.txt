@@ -9,7 +9,7 @@ int j, m, n;
  		j := j * 4;
  	}
  }
- while(a < b){
+ while(m < n){
 	j := j + 1; 
  }
  

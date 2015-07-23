@@ -75,7 +75,11 @@ public class GrammarAnalyser {
 		getFollowSet(map);
 		//System.out.println("FIRST SET:" + .toString());
 		//System.out.println("FOLLOW SET:" +.toString());
+		Set<String> vt = new HashSet<String>();
+		vt.addAll(vset);
+		vt.removeAll(vnset);
 		at = constructor();
+		at.setVT(vt);
 	}
 	public String getBNFGrammar(){
 		StringBuilder sb = new StringBuilder();
