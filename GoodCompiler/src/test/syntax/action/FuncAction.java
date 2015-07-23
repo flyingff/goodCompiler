@@ -52,7 +52,7 @@ public class FuncAction extends SemanticAction {
 			throw new RuntimeException("Duplicated local variable: " + name);
 		}
 		Symbol s = st.add(name);
-		s.attr("type", right[2].attr("name"));
+		s.attr("type", right[2].attr("type"));
 		parlist.add(s);
 		left.attr("parlist", parlist);
 	}
@@ -64,13 +64,20 @@ public class FuncAction extends SemanticAction {
 	
 	// 局部语句组或空=局部语句组,}@test.syntax.action.FuncAction.f6
 	public void f6(V left, V[] right) {
+		if((String)right[0].attr("ret") == null){
+			newQuad().field("ret");
+		}
 		if(right[0].attr("nextq") != null)
 			backPatch((Integer)right[0].attr("chain"), (Integer)right[0].attr("nextq"));
 	}
 	// 局部语句组=局部语句@test.syntax.action.FuncAction.f7
 	public void f7(V left, V[] right) {
 		left.attr("chain", right[0].attr("chain"));
-		left.attr("nextq", nextQuad());
+		left.attr("nextq", right[0].attr("nextq"));
+		String ret = (String) right[1].attr("ret");
+		if(ret !=null){
+			left.attr("ret", ret);
+		}
 	}
 	
 	// 局部语句组=局部语句组,局部语句@test.syntax.action.FuncAction.f8
@@ -81,6 +88,12 @@ public class FuncAction extends SemanticAction {
 		} else {
 			left.attr("chain", right[0].attr("chain"));
 		}
+		String ret1 = (String) right[1].attr("ret");
+		String ret0 = (String) right[0].attr("ret");
+		if(ret0 != null || ret1 != null ){
+			left.attr("ret", ret0 != null? ret0 : ret1);
+		}
+		//left.attr("ret", ret0 != null? ret0: ret1);
 		left.attr("nextq", nextQuad());
 	}
 	// 局部语句=return语句@test.syntax.action.FuncAction.f19
@@ -88,6 +101,7 @@ public class FuncAction extends SemanticAction {
 		left.attr("exe", 1);
 		left.attr("chain", right[0].attr("chain"));
 		left.attr("nextq", nextQuad());
+		left.attr("ret", right[0].attr("ret"));
 	}
 	// 局部语句=执行语句@test.syntax.action.FuncAction.f9
 	public void f9(V left, V[] right) {
@@ -102,9 +116,14 @@ public class FuncAction extends SemanticAction {
 	// 局部声明部分=类型,局部声明元@test.syntax.action.FuncAction.f11|
 	public void f11(V left, V[] right) {
 		String type = (String) right[0].attr("type");
-		Symbol s = st.add((String) right[1].attr("name"));
-		if(right[1].attr("dim") != null)
+		String name = (String) right[1].attr("name");
+		if(st.lookupLocal(name) != null){
+			throw new RuntimeException("Duplicate local variable: " + name);
+		}
+		Symbol s = st.add(name);
+		if(right[1].attr("dim") != null){
 			s.attr("dim", right[1].attr("dim"));
+		}
 		s.attr("type", type);
 		left.attr("type", type);
 	}
@@ -116,7 +135,8 @@ public class FuncAction extends SemanticAction {
 			throw new RuntimeException("Dupilicate local variable: " + name);
 		}
 		Symbol s = st.add(name);
-		s.attr("dim", right[2].attr("dim"));
+		if(right[2].attr("dim") != null)
+			s.attr("dim", right[2].attr("dim"));
 		s.attr("type", type);
 		left.attr("type", type);
 	}
@@ -154,11 +174,17 @@ public class FuncAction extends SemanticAction {
 	}
 	// return语句=return,值,semi@test.syntax.action.FuncAction.f18
 	public void f18(V left, V[] right) {
+		left.attr("ret", right[0].attr("value"));
 		Object val = right[1].attr("value");
 		newQuad().field("ret",null, null, val);
 		st.releaseTemp(val);
 	}
 	
+	/**
+	 * 回填
+	 * @param head
+	 * @param nextQuad
+	 */
 	private void backPatch(Integer head, int nextQuad) {
 		while(head != null && head >= Quad.STARTNUM){
 			Quad q = getQuad(head);

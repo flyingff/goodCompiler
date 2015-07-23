@@ -6,6 +6,7 @@ import syntax.Quad;
 import syntax.SymbolTable;
 
 /**
+ * 所有语义动作类的父类
  * public void actionName(V left, V[] right) {
  * 		
  * }

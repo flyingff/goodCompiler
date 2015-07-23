@@ -3,7 +3,11 @@ package test.syntax.action;
 import syntax.Quad;
 import syntax.V;
 import syntax.action.SemanticAction;
-
+/**
+ * 表达式的语义动作
+ * @author lxm
+ *
+ */
 public class ExpAction extends SemanticAction{
 		
 	// 布尔表达式=与或值@test.syntax.action.ExpAction.e1
@@ -46,13 +50,6 @@ public class ExpAction extends SemanticAction{
 			newhead = head2;
 		}
 		return newhead;
-	}
-	private void backPatch(Integer head, int nextQuad) {
-		while(head != null && head >= Quad.STARTNUM){
-			Quad q = getQuad(head);
-			head = (Integer)q.field[3];
-			q.field[3] = nextQuad;
-		}
 	}
 	// 与或值=非值@test.syntax.action.ExpAction.e4
 	public void e4(V left, V[] right){
@@ -99,4 +96,16 @@ public class ExpAction extends SemanticAction{
 	public void e10(V left, V[] right){
 		left.attr("value", right[0].attr("value"));
 	}	
+	/**
+	 * 回填
+	 * @param head
+	 * @param nextQuad
+	 */
+	private void backPatch(Integer head, int nextQuad) {
+		while(head != null && head >= Quad.STARTNUM){
+			Quad q = getQuad(head);
+			head = (Integer)q.field[3];
+			q.field[3] = nextQuad;
+		}
+	}
 }

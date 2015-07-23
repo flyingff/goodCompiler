@@ -24,8 +24,7 @@ q := a[2,2,4];
 real func(int pp){
 bool cc, qq,bb;
 int vh, _2f;
-while(true){
-	cc := pp;
-}
-return _2f; 
+	while(true){
+		cc := pp;
+	} 
 }  
