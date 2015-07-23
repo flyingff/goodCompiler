@@ -68,26 +68,69 @@ public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
 			String input = v.name;														// 当前输入
 			action = at.query(currState, input);										// 获得对于的动作
 			if (action == null){ 
-				StringBuffer err = new StringBuffer();
-				err.append("SYNTAX ERROR - Unexpected symbol: ").append(v.attr("value"));
+				/* 
+				 * 出错建议机制
+				 * 如果Action为NULL, 说明我们遇到了一个不能顺利进行分析的符号;
+				 * 为了帮助用户解决问题，我们可以采取以下策略：在该符号前插入
+				 * 所有可能输入的终结符中的一个，尝试继续分析过程，如果能够成功，
+				 * 并且能将原来不能顺利分析的符号移进掉，则认为该输入是有效的，
+				 * 并将其作为建议之一。
+				 * 例如：假设有输入串 a := 3 2;
+				 * 在扫描到第二个数字时发现无法规约，这时遍历所有的终结符，在其中选
+				 * 一个插入2之前，如果插入的终结符使得该式能够成功移近（“吃”）掉2（比如+和*
+				 * 都可以规约掉2，分别成为加值和乘积值）,则认为该终结符可以被建议。
+				 */
+				// 取得不能被规约符号的符号名
+				String nextVt = (String) v.name;
 				Set<String> proposal = new HashSet<>();
-				for(String vtx : at.getVT()) {
-					Action ax = at.query(currState, vtx);
-					if(ax == null) continue;
-					if(ax.getType() == Action.REDUCTION) {
-						int len = ax.getP().getRight().length;
-						int nextState = sstate.get(sstate.size() - 1 - len);
-						Action ax2 = at.query(nextState, ax.getP().getLeft());
-						if(ax2 == null || ax2.getType() != Action.GOTO) {
-							continue;
-						}
-						if(at.query(ax2.getState(), vtx) == null) {
-							continue;
+				// 遍历所有可能的终结符
+outer:			for(String vtx : at.getVT()) {
+					// 模拟
+					Action ax; 
+					// 复制状态栈，无需复制符号栈。
+					Stack<Integer> sstack2 = new Stack<Integer>();
+					sstack2.addAll(sstate);
+					// 进行模拟规约，直到插入的终结符被规约掉。
+					int currstate2;
+inner:				while(true) {
+						currstate2 = sstack2.peek();
+						ax = at.query(currstate2, vtx);
+						// 如果走不通，直接看下一个终结符
+						if(ax == null) continue outer;
+						switch(ax.getType()) {
+							// 如果是归约而非移进，继续
+							case Action.REDUCTION:
+								int poplen = ax.getP().getRight().length;
+								for(int i = 0; i < poplen; i++)
+									sstack2.pop();
+								ax = at.query(sstack2.peek(), ax.getP().getLeft());
+								if(ax == null || ax.getType() != Action.GOTO) continue outer;
+								sstack2.push(ax.getState());
+								break;
+							case Action.GOTO:
+								// this should not occur.
+								continue outer;
+							case Action.ACC:
+								// 如果能接受ACC，则认为该符号可用
+								proposal.add(vtx);
+								continue outer;
+							case Action.STEPINTO:
+								// 移近掉了插入的符号
+								sstack2.push(ax.getState());
+								break inner;
 						}
 					}
+					// 规约原有的符号
+					currstate2 = sstack2.peek();
+					ax = at.query(currstate2, nextVt);
+					// 如果仍然不能被规约，说明该插入终结符无效
+					if(ax == null) continue;
 					proposal.add(vtx);
 				}
-				err.append("\nExpect these symbols:").append(proposal);
+				// 生成格式化的错误信息
+				StringBuffer err = new StringBuffer();
+				err.append("SYNTAX ERROR - Unexpected symbol: ").append(v.attr("value"));
+				err.append(", expect these symbols:").append(proposal);
 				throw new RuntimeException(err.toString());
 			}
 			// 根据不同类型执行不同的动作
