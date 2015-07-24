@@ -74,7 +74,7 @@ public class FuncAction extends SemanticAction {
 	public void f7(V left, V[] right) {
 		left.attr("chain", right[0].attr("chain"));
 		left.attr("nextq", right[0].attr("nextq"));
-		String ret = (String) right[1].attr("ret");
+		String ret = (String) right[0].attr("ret");
 		if(ret !=null){
 			left.attr("ret", ret);
 		}

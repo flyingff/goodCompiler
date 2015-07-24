@@ -18,10 +18,14 @@ public interface SyntaxAnalyzer {
 	List<Quad> analyse();
 	
 	/**
-	 * 
+	 * 获得符号表
 	 * @return
 	 */
 	SymbolTable getSymbolTable();
 	
+	/**
+	 * 得到四元式列表
+	 * @return
+	 */
 	List<Quad> getQuad();
 }

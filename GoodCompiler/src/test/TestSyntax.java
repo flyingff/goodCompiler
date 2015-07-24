@@ -11,7 +11,11 @@ import lexical.TableReader;
 import syntax.Quad;
 import syntax.SyntaxAnalyzer;
 import syntax.SyntaxAnalyzerImpl;
-
+/**
+ * 语法分析测试程序
+ * @author lxm
+ *
+ */
 public class TestSyntax {
 	public static void main(String[] args) throws Exception{
 		boolean wordChanged = false;
@@ -31,7 +35,7 @@ public class TestSyntax {
 		// start analyze
 		LexicalAnalyzer la;
         la = new LexicalAnalyzerImpl(new FileInputStream(automatPath));
-        la.load(LexicalTest.class.getResourceAsStream("input4.txt"));
+        la.load(LexicalTest.class.getResourceAsStream("input6.txt"));
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
         	@Override
         	public void uncaughtException(Thread arg0, Throwable e) {
@@ -39,7 +43,7 @@ public class TestSyntax {
         		while(t.getCause() != null) t = t.getCause();
         		
         		if (t instanceof RuntimeException) {
-        			System.err.println("Error at line " + la.getLine() + ", col " + la.getCol());
+        			System.err.println("Error at line " + la.getLine() + ", col " + (la.getCol() - 1));
         			System.err.println(t.getMessage());
         		}
         		t.printStackTrace();

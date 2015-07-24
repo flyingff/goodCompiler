@@ -1,0 +1,13 @@
+int a, b, c, d;
+
+while ((a < c) && (b < d)){
+	if (a == 1){
+			c := c + 1;
+		}else{ 
+			while(a <= d){
+				a := a + 2;
+		}
+	}
+}
+
+ 

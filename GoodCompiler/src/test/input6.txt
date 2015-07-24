@@ -1,0 +1,11 @@
+int q, f,dd;
+char c, charq, sdd;
+real r, rr, tt;
+bool ddt, qq,cc;
+rr := 111;
+ int a(int ss, real pp){
+ 	r := 12.1;
+}
+f := q;
+
+tt := a(f, rr);

@@ -115,7 +115,7 @@ inner:				while(true) {
 								proposal.add(vtx);
 								continue outer;
 							case Action.STEPINTO:
-								// 移近掉了插入的符号
+								// 移进掉了插入的符号
 								sstack2.push(ax.getState());
 								break inner;
 						}

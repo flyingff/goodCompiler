@@ -80,6 +80,7 @@ public class GrammarAnalyser {
 		vt.removeAll(vnset);
 		at = constructor();
 		at.setVT(vt);
+		//System.out.println(getBNFGrammar());
 	}
 	public String getBNFGrammar(){
 		StringBuilder sb = new StringBuilder();
@@ -129,6 +130,8 @@ public class GrammarAnalyser {
 		at.show();
 		at.save(new FileOutputStream(savePath));
 		System.out.println("File saved at '" + savePath + "'.");
+		//new GrammarAnalyser(GrammarAnalyser.class.getResourceAsStream("/test/grammar.properties"));
+		
 	}
 	/**
 	 * 返回项目集
