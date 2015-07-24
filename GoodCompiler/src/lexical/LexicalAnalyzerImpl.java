@@ -20,16 +20,17 @@ import syntax.V;
  */
 public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 	private static final Set<Character> BLANKCH = new HashSet<Character>(Arrays.asList(' ','\t','\n','\r'));//空白字符集
-	private int line = 1, col = 0;
+	private int line = 1, col = 1;
+	private int lastLine = 1, lastCol = 1;
 	private BufferedReader br;															//从输入流读取字符的缓冲区
 	private int buf = -1;																//缓冲区
 	private DFAAutomat dfa;																//DFA自动机对象
 	private StringBuffer sb = new StringBuffer();										//保存未识别完的输入字符串
 	public int getLine() {
-		return line;
+		return lastLine;
 	}
 	public int getCol() {
-		return col;
+		return lastCol;
 	}
 	/**
 	 * 获得DFA对象
@@ -62,11 +63,13 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 			while(BLANKCH.contains(r)) {												//找到非空字符
 				if(r == '\n') {
 					line++;
-					col = 0;
+					col = 1;
 				}
 				r = getChar();
 			}
 			// enable circle	
+			lastLine = line;
+			lastCol = col;
 			do {																		// 开始循环
 				pre = curr;
 				curr = dfa.next(r);

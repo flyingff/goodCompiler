@@ -45,6 +45,11 @@ public class ValueAction extends SemanticAction{
 		left.attr("value", right[0].attr("value"));
 		left.attr("type", right[0].attr("type"));
 	}
+	// 元值=函数调用@test.syntax.action.ValueAction.a4
+	public void a4(V left, V[] right){
+		Symbol func = (Symbol)right[0].attr("func");
+		
+	}
 	// 元值 = 左值@test.syntax.action.ValueAction.a5
 	public void a5(V left, V[] right){
 		Symbol s = (Symbol)right[0].attr("value");
@@ -231,6 +236,7 @@ public class ValueAction extends SemanticAction{
 			}
 		}
 		newQuad().field("call", null, null, func + "@" + func.attr("addr"));
+		left.attr("func", func);
 	}
 	// 实参列表=实参@test.syntax.action.ValueAction.a17
 	public void a17(V left, V[] right){

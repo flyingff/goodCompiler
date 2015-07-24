@@ -65,10 +65,14 @@ public class FuncAction extends SemanticAction {
 	// 局部语句组或空=局部语句组,}@test.syntax.action.FuncAction.f6
 	public void f6(V left, V[] right) {
 		if((String)right[0].attr("ret") == null){
-			newQuad().field("ret");
+			throw new RuntimeException("Need a return statement...");
 		}
 		if(right[0].attr("nextq") != null)
 			backPatch((Integer)right[0].attr("chain"), (Integer)right[0].attr("nextq"));
+	}
+	// 局部语句组或空=}@test.syntax.action.FuncAction.f22
+	public void f22(V left, V[] right){
+		throw new RuntimeException("Need a return statement...");
 	}
 	// 局部语句组=局部语句@test.syntax.action.FuncAction.f7
 	public void f7(V left, V[] right) {
@@ -77,6 +81,8 @@ public class FuncAction extends SemanticAction {
 		String ret = (String) right[0].attr("ret");
 		if(ret !=null){
 			left.attr("ret", ret);
+		} else {
+			throw new RuntimeException("Need a return statement...");
 		}
 	}
 	

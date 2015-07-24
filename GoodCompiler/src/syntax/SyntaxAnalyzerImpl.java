@@ -148,6 +148,7 @@ inner:				while(true) {
 				vnx.isFinal = false;
 				SemanticAction(p, vnx, param);
 				System.out.println("Analyze complete!");
+				st.allocateAddr();
 				break;
 				// 跳转
 			case Action.GOTO:

@@ -8,7 +8,7 @@ import syntax.V;
 import syntax.action.SemanticAction;
 
 /**
- * 声明语句
+ * 声明语句部分
  * @author lxm
  *
  */
@@ -20,7 +20,6 @@ public class Vstmt extends SemanticAction {
 		left.attr("type", type);
 		Symbol s = (Symbol) right[1].attr("symbol");
 		s.attr("type", type);
-		st.allocateAddr(s, false);
 	}
 	// 声明语句=声明语句,com,声明元@test.syntax.action.Vstmt.a2
 	public void a2(V left, V[] right){
@@ -28,7 +27,6 @@ public class Vstmt extends SemanticAction {
 		left.attr("type", type);
 		Symbol s = (Symbol) right[2].attr("symbol");
 		s.attr("type", type);
-		st.allocateAddr(s, false);
 	}
 	// 类型=int@test.syntax.action.Vstmt.a3
 	// 类型=bool@test.syntax.action.Vstmt.a3
@@ -49,7 +47,6 @@ public class Vstmt extends SemanticAction {
 	// 声明元=声明元数组参数表,]@test.syntax.action.Vstmt.a5
 	public void a5(V left, V[] right){
 		Symbol s = (Symbol)right[0].attr("symbol");
-		st.allocateAddr(s, false);
 		left.attr("symbol", s);
 	}
 	// 数组参数表=id,[,值@test.syntax.action.Vstmt.a6

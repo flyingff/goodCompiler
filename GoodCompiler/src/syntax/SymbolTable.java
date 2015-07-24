@@ -18,8 +18,7 @@ public class SymbolTable {
 	private Map<String, Symbol> localSyms = null;											// 局部符号
 	private Set<Symbol> temp = new HashSet<>(), pool = new HashSet<>();						// 临时变量池
 	private static int startAddr = 10000;													// 符号表起始地址
-	private static int tempStartAddr = 9000;												// 临时变量区的起始地址
-	private static final int INTSIZE = 2, CHARSIZE = 1, REALZISE = 4;						// 定义不同类型的分配空间
+	private static final int INTSIZE = 4, CHARSIZE = 2, REALZISE = 8, BOOLSIZE = 1;			// 定义不同类型的分配空间
 	/**
 	 * 在全局符号表和当前局部符号表中查看符号是否存在</br>
 	 * 并返回符号信息
@@ -41,7 +40,7 @@ public class SymbolTable {
 	 * @param isTemp
 	 * @return
 	 */
-	public Symbol allocateAddr(Symbol s, boolean isTemp){
+	/*public Symbol allocateAddr(Symbol s, boolean isTemp){
 		if(!isTemp) {
 			s.attr("startAddr", startAddr);
 			int num = 1;
@@ -74,7 +73,7 @@ public class SymbolTable {
 			// 不知道临时变量的空间怎么分配...
 		}
 		return s;
-	}
+	}*/
 	/**
 	 * 仅在当前局部符号表中查看符号是否存在</br>
 	 * 返回符号的信息
@@ -206,6 +205,48 @@ public class SymbolTable {
 		}
 		return sb.toString();
 	}
+	public void allocateAddr() {
+		int allocPointer = startAddr;
+		// 为临时变量分空间
+	    for(Symbol sx : pool){
+	    	sx.attr("addr", allocPointer);
+	    	sx.attr("size", 8);
+	    	allocPointer += 8;
+	    }
+	    // 全局变量分配空间
+	    for(Entry<String, Symbol> sx : syms.entrySet()){
+	    	Symbol s = sx.getValue();
+	    	s.attr("addr", allocPointer);
+			int num = 1;
+			@SuppressWarnings("unchecked")
+            List<Integer> dim = (List<Integer>)s.attr("dim");
+			if(dim != null){
+				for(Integer ix : dim){
+					num *= ix;
+				}
+			}
+			switch((String)s.attr("type")) {
+				case "int":
+					s.attr("size", INTSIZE * num);
+					allocPointer += INTSIZE * num; 
+				break;
+				case "char":
+					s.attr("size", CHARSIZE * num);
+					allocPointer += CHARSIZE * num; 
+				break;
+				case "bool":
+					s.attr("size", BOOLSIZE * num);
+					allocPointer += BOOLSIZE * num; 
+				break;
+				case "real":
+					s.attr("size", REALZISE * num);
+					allocPointer += REALZISE * num; 
+				break;
+				default:
+					throw new RuntimeException("wrong type of symbol: " + s.name + " type :" + s.attr("type"));
+			}
+	    }
+    }
 }
 
 class TempSymbol extends Symbol{
