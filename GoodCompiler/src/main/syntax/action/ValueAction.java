@@ -17,7 +17,7 @@ import syntax.action.SemanticAction;
 public class ValueAction extends SemanticAction{
 	public static final String INT = "int", REAL = "real", CHAR = "char", BOOL="bool";	// 四种类型
 	private static final String[] PREC = new String[]{BOOL, CHAR, INT, REAL};			// 类型数组
-	// 元值=number@test.syntax.action.ValueAction.a1
+	// 元值=number@main.syntax.action.ValueAction.a1
 	public void a1(V left, V[] right){
 		String val = (String) right[0].attr("value");
 		if (val.indexOf('.') == -1) {
@@ -30,22 +30,22 @@ public class ValueAction extends SemanticAction{
 			left.attr("type", REAL);
 		}
 	}
-	// 元值=(,值,)@test.syntax.action.ValueAction.a2
+	// 元值=(,值,)@main.syntax.action.ValueAction.a2
 	public void a2(V left, V[] right){
 		left.attr("type", right[1].attr("type"));
 		left.attr("value", right[1].attr("value"));
 	}
-	// 值=加值@test.syntax.action.ValueAction.pass
-	// 加值=乘积值@test.syntax.action.ValueAction.pass
-	// 乘积值=自增值@test.syntax.action.ValueAction.pass
-	// 自增值=元值@test.syntax.action.ValueAction.pass
-	// 数组访问参数=值@test.syntax.action.ValueAction.pass
-	// 元值=函数调用@test.syntax.action.ValueAction.pass
+	// 值=加值@main.syntax.action.ValueAction.pass
+	// 加值=乘积值@main.syntax.action.ValueAction.pass
+	// 乘积值=自增值@main.syntax.action.ValueAction.pass
+	// 自增值=元值@main.syntax.action.ValueAction.pass
+	// 数组访问参数=值@main.syntax.action.ValueAction.pass
+	// 元值=函数调用@main.syntax.action.ValueAction.pass
 	public void pass(V left, V[] right){
 		left.attr("value", right[0].attr("value"));
 		left.attr("type", right[0].attr("type"));
 	}
-	// 元值 = 左值@test.syntax.action.ValueAction.a5
+	// 元值 = 左值@main.syntax.action.ValueAction.a5
 	public void a5(V left, V[] right){
 		Symbol s = (Symbol)right[0].attr("value");
 		Object offset = right[0].attr("offset");
@@ -59,7 +59,7 @@ public class ValueAction extends SemanticAction{
 		}
 		left.attr("type", s.attr("type"));
 	}
-	// 自增值=++,左值@test.syntax.action.ValueAction.a6
+	// 自增值=++,左值@main.syntax.action.ValueAction.a6
 	public void a6(V left, V[] right){
 		Symbol sx = (Symbol)right[1].attr("value");
 		Object offset = right[1].attr("offset");
@@ -83,7 +83,7 @@ public class ValueAction extends SemanticAction{
 			left.attr("value", tmp2);
 		}
 	}
-	// 自增值=左值,++@test.syntax.action.ValueAction.a7
+	// 自增值=左值,++@main.syntax.action.ValueAction.a7
 	public void a7(V left, V[] right){
 		Symbol sx = (Symbol)right[0].attr("value");
 		Object offset = right[1].attr("offset");
@@ -108,7 +108,7 @@ public class ValueAction extends SemanticAction{
 			left.attr("value", tmp1);
 		}
 	}
-	// 乘积值 = 乘积值,*,自增值@test.syntax.action.ValueAction.a8
+	// 乘积值 = 乘积值,*,自增值@main.syntax.action.ValueAction.a8
 	public void a8(V left, V[] right){
 		Object p1 = right[0].attr("value"), p2 = right[2].attr("value");
 		Symbol temp = st.getTemp();
@@ -118,7 +118,7 @@ public class ValueAction extends SemanticAction{
 		left.attr("value", temp);
 		left.attr("type", getResultType((String)right[0].attr("type"), (String)right[2].attr("type")));
 	}
-	// 加值 = 加值,+,乘积值@test.syntax.action.ValueAction.a9
+	// 加值 = 加值,+,乘积值@main.syntax.action.ValueAction.a9
 	public void a9(V left, V[] right){
 		Object p1 = right[0].attr("value"), p2 = right[2].attr("value");
 		Symbol temp = st.getTemp();
@@ -139,7 +139,7 @@ public class ValueAction extends SemanticAction{
 		left.attr("value", temp);
 		left.attr("type", getResultType((String)right[0].attr("type"), (String)right[2].attr("type")));
 	}
-	// 值=左值,ass,加值@test.syntax.action.ValueAction.a10
+	// 值=左值,ass,加值@main.syntax.action.ValueAction.a10
 	public void a10(V left, V[] right){
 		Quad qx = newQuad();
 		Object val = right[2].attr("value");
@@ -150,12 +150,12 @@ public class ValueAction extends SemanticAction{
 		left.attr("value", val);
 		left.attr("type", ((Symbol)leftv).attr("type"));
 	}
-	// 求值语句=值,semi@test.syntax.action.ValueAction.a11
+	// 求值语句=值,semi@main.syntax.action.ValueAction.a11
 	public void a11(V left, V[] right){
 		Object val = right[0].attr("value");
 		st.releaseTemp(val);
 	}
-	// 左值 = id@test.syntax.action.ValueAction.a12
+	// 左值 = id@main.syntax.action.ValueAction.a12
 	public void a12(V left, V[] right){
 		Symbol sx = st.lookup((String) right[0].attr("value"));
 		if (sx == null) {
@@ -164,7 +164,7 @@ public class ValueAction extends SemanticAction{
 		left.attr("type", sx.attr("type"));
 		left.attr("value", sx);
 	}
-	// 左值 = 数组访问参数表,]@test.syntax.action.ValueAction.a13
+	// 左值 = 数组访问参数表,]@main.syntax.action.ValueAction.a13
 	public void a13(V left, V[] right){
 		Symbol s = (Symbol)right[0].attr("value");
 		int currdim =(Integer)right[0].attr("currdim");
@@ -175,7 +175,7 @@ public class ValueAction extends SemanticAction{
 		left.attr("offset", right[0].attr("offset"));
 		left.attr("type", s.attr("type"));
 	}
-	// 数组访问参数表 = id,[,数组访问参数@test.syntax.action.ValueAction.a14
+	// 数组访问参数表 = id,[,数组访问参数@main.syntax.action.ValueAction.a14
 	public void a14(V left, V[] right){
 		Symbol sx = st.lookup((String) right[0].attr("value"));
 		if (sx == null) {
@@ -190,7 +190,7 @@ public class ValueAction extends SemanticAction{
 		if (type.equals(REAL)) throw new RuntimeException("Array dimension cannot be a real number:" + right[2].attr("value"));
 		left.attr("offset", right[2].attr("value"));
 	}
-	// 数组访问参数表 = 数组访问参数表,com,数组访问参数@test.syntax.action.ValueAction.a15
+	// 数组访问参数表 = 数组访问参数表,com,数组访问参数@main.syntax.action.ValueAction.a15
 	public void a15(V left, V[] right){
 		int currdim = (Integer)right[0].attr("currdim") + 1;
 		Object offset = right[0].attr("offset"), dimx = right[2].attr("value");
@@ -213,7 +213,7 @@ public class ValueAction extends SemanticAction{
 		left.attr("value", s);
 		left.attr("type", s.attr("type"));
 	}
-	// 函数调用=id,(,实参列表,)@test.syntax.action.ValueAction.a16
+	// 函数调用=id,(,实参列表,)@main.syntax.action.ValueAction.a16
 	public void a16(V left, V[] right){
 		String name = (String)right[0].attr("value");
 		Symbol func = st.lookupFunc(name);
@@ -237,13 +237,13 @@ public class ValueAction extends SemanticAction{
 		newQuad().field("getRetValue", null, null, temp);
 		left.attr("value", temp);
 	}
-	// 实参列表=实参@test.syntax.action.ValueAction.a17
+	// 实参列表=实参@main.syntax.action.ValueAction.a17
 	public void a17(V left, V[] right){
 		List<Object> paras = new ArrayList<>();
 		paras.add(right[0].attr("value"));
 		left.attr("paras", paras);
 	}
-	// 实参列表=实参列表,com,实参@test.syntax.action.ValueAction.a18
+	// 实参列表=实参列表,com,实参@main.syntax.action.ValueAction.a18
 	public void a18(V left, V[] right) {
 		@SuppressWarnings("unchecked")
 		List<Object> paras = (List<Object>)right[0].attr("paras");
@@ -254,7 +254,7 @@ public class ValueAction extends SemanticAction{
 		paras.add(right[2].attr("value"));
 		left.attr("paras", paras);
 	}
-	// 实参=值@test.syntax.action.ValueAction.a20
+	// 实参=值@main.syntax.action.ValueAction.a20
 	public void a20(V left, V[] right){
 		left.attr("value", right[0].attr("value"));
 		left.attr("type", right[0].attr("type"));

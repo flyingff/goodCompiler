@@ -14,7 +14,7 @@ while (a < 10){
 }
 int func1(bool b, char ch){
 	int temp;
-	while(b == 0){
+	while((b == 0) && (2 <> (b := 2))){
 		if(a == 11){
 			temp := 9;
 			a := temp + a;
@@ -31,5 +31,7 @@ int func1(bool b, char ch){
 }
 a := func1(bb, ch);
 a1[2] := a;
-array[0, 1, 2] := a1[2];
+a + ch;
+a := (++a1[9]);
+array[a1[2], 1, 2] := a1[2];
  

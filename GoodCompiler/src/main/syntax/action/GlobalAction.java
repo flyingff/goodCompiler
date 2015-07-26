@@ -9,17 +9,17 @@ import syntax.action.SemanticAction;
  *
  */
 public class GlobalAction extends SemanticAction {
-	// S=语句组@test.syntax.action.GlobalAction.a1
+	// S=语句组@main.syntax.action.GlobalAction.a1
 	public void a1(V left, V[] right) {
 		backPatch((Integer)right[0].attr("chain"), nextQuad());
 		newQuad().field("end");
 	}
-	// 语句组=语句@test.syntax.action.GlobalAction.a2
+	// 语句组=语句@main.syntax.action.GlobalAction.a2
 	public void a2(V left, V[] right) {
 		left.attr("nextq", nextQuad());
 		left.attr("chain", right[0].attr("chain"));
 	}
-	// 语句组=语句组,语句@test.syntax.action.GlobalAction.a3
+	// 语句组=语句组,语句@main.syntax.action.GlobalAction.a3
 	public void a3(V left, V[] right) {
 		if(right[1].attr("exe") != null) {
 			backPatch((Integer)right[0].attr("chain"), (Integer)right[0].attr("nextq"));
@@ -29,7 +29,7 @@ public class GlobalAction extends SemanticAction {
 		}
 		left.attr("nextq", nextQuad());
 	}
-	// 语句=执行语句@test.syntax.action.GlobalAction.a4
+	// 语句=执行语句@main.syntax.action.GlobalAction.a4
 	public void a4(V left, V[] right) {
 		left.attr("chain", right[0].attr("chain"));
 		left.attr("exe", 1);

@@ -13,13 +13,13 @@ import syntax.action.SemanticAction;
  *
  */
 public class FuncAction extends SemanticAction {
-	// 函数声明语句=函数头,{,局部语句组或空@test.syntax.action.FuncAction.f1
+	// 函数声明语句=函数头,{,局部语句组或空@main.syntax.action.FuncAction.f1
 	public void f1(V left, V[] right) {
 		Symbol s = (Symbol) right[0].attr("func");
 		s.attr("localVar", st.exitFunc());
 		backPatch((Integer)right[0].attr("skip"), nextQuad());
 	}
-	// 函数头=类型和函数名,(,形式参数列表,)@test.syntax.action.FuncAction.f2
+	// 函数头=类型和函数名,(,形式参数列表,)@main.syntax.action.FuncAction.f2
 	public void f2(V left, V[] right) {
 		Symbol s = (Symbol) right[0].attr("func");
 		s.attr("parlist", right[2].attr("parlist"));
@@ -28,7 +28,7 @@ public class FuncAction extends SemanticAction {
 		newQuad().field("j");
 		s.attr("addr", nextQuad());
 	}
-	// 类型和函数名=类型,id@test.syntax.action.FuncAction.f17
+	// 类型和函数名=类型,id@main.syntax.action.FuncAction.f17
 	public void f17(V left, V[] right) {
 		String funcName = (String) right[1].attr("value");
 		if (st.lookupFunc(funcName) != null) {
@@ -39,7 +39,7 @@ public class FuncAction extends SemanticAction {
 		st.enterFunc();
 		left.attr("func", s);
 	}
-	// 形式参数列表=形式参数@test.syntax.action.FuncAction.f3
+	// 形式参数列表=形式参数@main.syntax.action.FuncAction.f3
 	public void f3(V left, V[] right) {
 		List<Symbol> parlist = new ArrayList<>();
 		Symbol s = st.add((String)right[0].attr("name"));
@@ -47,7 +47,7 @@ public class FuncAction extends SemanticAction {
 		parlist.add(s);
 		left.attr("parlist", parlist);
 	}
-	// 形式参数列表=形式参数列表,com,形式参数@test.syntax.action.FuncAction.f4
+	// 形式参数列表=形式参数列表,com,形式参数@main.syntax.action.FuncAction.f4
 	public void f4(V left, V[] right) {
 		@SuppressWarnings("unchecked")
 		List<Symbol> parlist = (List<Symbol>) right[0].attr("parlist");
@@ -60,13 +60,13 @@ public class FuncAction extends SemanticAction {
 		parlist.add(s);
 		left.attr("parlist", parlist);
 	}
-	// 形式参数=类型,id@test.syntax.action.FuncAction.f5
+	// 形式参数=类型,id@main.syntax.action.FuncAction.f5
 	public void f5(V left, V[] right) {
 		left.attr("type", right[0].attr("type"));
 		left.attr("name", right[1].attr("value"));
 	}
 	
-	// 局部语句组或空=局部语句组,}@test.syntax.action.FuncAction.f6
+	// 局部语句组或空=局部语句组,}@main.syntax.action.FuncAction.f6
 	public void f6(V left, V[] right) {
 		if((String)right[0].attr("ret") == null){
 			throw new RuntimeException("Need a return statement...");
@@ -74,11 +74,11 @@ public class FuncAction extends SemanticAction {
 		if(right[0].attr("nextq") != null)
 			backPatch((Integer)right[0].attr("chain"), (Integer)right[0].attr("nextq"));
 	}
-	// 局部语句组或空=}@test.syntax.action.FuncAction.f22
+	// 局部语句组或空=}@main.syntax.action.FuncAction.f22
 	public void f22(V left, V[] right){
 		throw new RuntimeException("Need a return statement...");
 	}
-	// 局部语句组=局部语句@test.syntax.action.FuncAction.f7
+	// 局部语句组=局部语句@main.syntax.action.FuncAction.f7
 	public void f7(V left, V[] right) {
 		left.attr("chain", right[0].attr("chain"));
 		left.attr("nextq", right[0].attr("nextq"));
@@ -88,7 +88,7 @@ public class FuncAction extends SemanticAction {
 		}
 	}
 	
-	// 局部语句组=局部语句组,局部语句@test.syntax.action.FuncAction.f8
+	// 局部语句组=局部语句组,局部语句@main.syntax.action.FuncAction.f8
 	public void f8(V left, V[] right) {
 		if(right[1].attr("exe") != null) {
 			if(right[0].attr("nextq") != null){
@@ -106,24 +106,24 @@ public class FuncAction extends SemanticAction {
 		//left.attr("ret", ret0 != null? ret0: ret1);
 		left.attr("nextq", nextQuad());
 	}
-	// 局部语句=return语句@test.syntax.action.FuncAction.f19
+	// 局部语句=return语句@main.syntax.action.FuncAction.f19
 	public void f19(V left, V[] right) {
 		left.attr("exe", 1);
 		left.attr("chain", right[0].attr("chain"));
 		left.attr("nextq", nextQuad());
 		left.attr("ret", right[0].attr("ret"));
 	}
-	// 局部语句=执行语句@test.syntax.action.FuncAction.f9
+	// 局部语句=执行语句@main.syntax.action.FuncAction.f9
 	public void f9(V left, V[] right) {
 		left.attr("exe", 1);
 		left.attr("chain", right[0].attr("chain"));
 		left.attr("nextq", nextQuad());
 	}
-	// 局部变量定义语句=局部声明部分,semi@test.syntax.action.FuncAction.f10
+	// 局部变量定义语句=局部声明部分,semi@main.syntax.action.FuncAction.f10
 	public void f10(V left, V[] right) {
 		
 	}
-	// 局部声明部分=类型,局部声明元@test.syntax.action.FuncAction.f11|
+	// 局部声明部分=类型,局部声明元@main.syntax.action.FuncAction.f11|
 	public void f11(V left, V[] right) {
 		String type = (String) right[0].attr("type");
 		String name = (String) right[1].attr("name");
@@ -137,7 +137,7 @@ public class FuncAction extends SemanticAction {
 		s.attr("type", type);
 		left.attr("type", type);
 	}
-	// 局部声明部分=局部声明部分,com,局部声明元@test.syntax.action.FuncAction.f12
+	// 局部声明部分=局部声明部分,com,局部声明元@main.syntax.action.FuncAction.f12
 	public void f12(V left, V[] right) {
 		String type = (String) right[0].attr("type");
 		String name = (String) right[2].attr("name");
@@ -150,16 +150,16 @@ public class FuncAction extends SemanticAction {
 		s.attr("type", type);
 		left.attr("type", type);
 	}
-	// 局部声明元=id@test.syntax.action.FuncAction.f13
+	// 局部声明元=id@main.syntax.action.FuncAction.f13
 	public void f13(V left, V[] right) {
 		left.attr("name", right[0].attr("value"));
 	}
-	// 局部声明元=局部数组参数表,]@test.syntax.action.FuncAction.f14
+	// 局部声明元=局部数组参数表,]@main.syntax.action.FuncAction.f14
 	public void f14(V left, V[] right) {
 		left.attr("name", right[0].attr("name"));
 		left.attr("dim", right[0].attr("dim"));
 	}
-	// 局部数组参数表=id,[,number@test.syntax.action.FuncAction.f15
+	// 局部数组参数表=id,[,number@main.syntax.action.FuncAction.f15
 	public void f15(V left, V[] right) {
 		left.attr("name",right[0].attr("value"));
 		List<Integer> dim = new ArrayList<>();
@@ -170,7 +170,7 @@ public class FuncAction extends SemanticAction {
 		dim.add(Integer.parseInt(val));
 		left.attr("dim", dim);
 	}
-	// 局部数组参数表=局部数组参数表,com,number@test.syntax.action.FuncAction.f16
+	// 局部数组参数表=局部数组参数表,com,number@main.syntax.action.FuncAction.f16
 	public void f16(V left, V[] right) {
 		@SuppressWarnings("unchecked")
 		List<Integer> dim = (List<Integer>) right[0].attr("dim");
@@ -182,7 +182,7 @@ public class FuncAction extends SemanticAction {
 		left.attr("name", right[0].attr("name"));
 		left.attr("dim", dim);
 	}
-	// return语句=return,值,semi@test.syntax.action.FuncAction.f18
+	// return语句=return,值,semi@main.syntax.action.FuncAction.f18
 	public void f18(V left, V[] right) {
 		left.attr("ret", right[0].attr("value"));
 		Object val = right[1].attr("value");

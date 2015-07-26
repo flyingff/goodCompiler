@@ -11,27 +11,27 @@ import syntax.action.SemanticAction;
  */
 public class ExpAction extends SemanticAction{
 		
-	// 布尔表达式=与或值@test.syntax.action.ExpAction.e1
+	// 布尔表达式=与或值@mainsyntax.action.ExpAction.e1
 	public void e1(V left, V[] right){
 		left.attr("TC", right[0].attr("TC"));
 		left.attr("FC", right[0].attr("FC"));
 	}
-	// 与或值=与前缀,非值@test.syntax.action.ExpAction.e2
+	// 与或值=与前缀,非值@mainsyntax.action.ExpAction.e2
 	public void e2(V left, V[] right){
 		 left.attr("FC", merge((Integer)right[0].attr("FC"), (Integer)right[1].attr("FC")));
 		 left.attr("TC", right[1].attr("TC"));
 	}
-	// 与或值 =或前缀,非值@test.syntax.action.ExpAction.e3 
+	// 与或值 =或前缀,非值@mainsyntax.action.ExpAction.e3 
 	public void e3(V left, V[] right){
 		 left.attr("TC", merge((Integer)right[0].attr("TC"), (Integer)right[1].attr("TC")));
 		 left.attr("FC", right[1].attr("FC"));
 	}
-	// 与前缀=与或值,and@test.syntax.action.ExpAction.e11
+	// 与前缀=与或值,and@mainsyntax.action.ExpAction.e11
 	public void e11(V left, V[] right){
 		left.attr("FC", right[0].attr("FC"));
 		backPatch((Integer)right[0].attr("TC"), nextQuad());
 	}
-	// 或前缀=与或值,or@test.syntax.action.ExpAction.e12
+	// 或前缀=与或值,or@mainsyntax.action.ExpAction.e12
 	public void e12(V left, V[] right){
 		left.attr("TC", right[0].attr("TC"));
 		backPatch((Integer)right[0].attr("FC"), nextQuad());
@@ -52,28 +52,28 @@ public class ExpAction extends SemanticAction{
 		}
 		return newhead;
 	}
-	// 与或值=非值@test.syntax.action.ExpAction.e4
+	// 与或值=非值@mainsyntax.action.ExpAction.e4
 	public void e4(V left, V[] right){
 		left.attr("TC", right[0].attr("TC"));
 		left.attr("FC", right[0].attr("FC"));
 	}
-	// 非值=not,元布尔值@test.syntax.action.ExpAction.e5
+	// 非值=not,元布尔值@mainsyntax.action.ExpAction.e5
 	public void e5(V left, V[] right){
 		left.attr("TC", right[1].attr("FC"));
 		left.attr("FC", right[1].attr("TC"));
 	}
-	// 非值=元布尔值@test.syntax.action.ExpAction.e6
+	// 非值=元布尔值@mainsyntax.action.ExpAction.e6
 	public void e6(V left, V[] right){
 		left.attr("TC", right[0].attr("TC"));
 		left.attr("FC", right[0].attr("FC"));
 	}
-	// 元布尔值=false@test.syntax.action.ExpAction.e7|true@test.syntax.action.ExpAction.e7
+	// 元布尔值=false@mainsyntax.action.ExpAction.e7|true@mainsyntax.action.ExpAction.e7
 	public void e7(V left, V[] right){
 		Quad q = newQuad();
 		q.field("j");
 		left.attr("true".equals(right[0].attr("value"))?"TC":"FC", q.num);
 	}
-	// 元布尔值=值,关系运算符,值@test.syntax.action.ExpAction.e8
+	// 元布尔值=值,关系运算符,值@mainsyntax.action.ExpAction.e8
 	public void e8(V left, V[] right){
 		Object o1 = right[0].attr("value"), o2 = right[2].attr("value");
 		Quad qx = newQuad();
@@ -83,17 +83,17 @@ public class ExpAction extends SemanticAction{
 		qx.field("j");
 		left.attr("FC", qx.num);
 	}
-	// 元布尔值=(,布尔表达式,)@test.syntax.action.ExpAction.e9
+	// 元布尔值=(,布尔表达式,)@mainsyntax.action.ExpAction.e9
 	public void e9(V left, V[] right){
 		left.attr("TC", right[1].attr("TC"));
 		left.attr("FC", right[1].attr("FC"));
 	}
-	// 关系运算符=<@test.syntax.action.ExpAction.e10
-	// 关系运算符=>@test.syntax.action.ExpAction.e10
-	// 关系运算符=<>@test.syntax.action.ExpAction.e10
-	// 关系运算符=\=\=@test.syntax.action.ExpAction.e10
-	// 关系运算符=>\=@test.syntax.action.ExpAction.e10
-	// 关系运算符=<\=@test.syntax.action.ExpAction.e10
+	// 关系运算符=<@mainsyntax.action.ExpAction.e10
+	// 关系运算符=>@mainsyntax.action.ExpAction.e10
+	// 关系运算符=<>@mainsyntax.action.ExpAction.e10
+	// 关系运算符=\=\=@mainsyntax.action.ExpAction.e10
+	// 关系运算符=>\=@mainsyntax.action.ExpAction.e10
+	// 关系运算符=<\=@mainsyntax.action.ExpAction.e10
 	public void e10(V left, V[] right){
 		left.attr("value", right[0].attr("value"));
 	}	
@@ -102,7 +102,7 @@ public class ExpAction extends SemanticAction{
 	 * @param head
 	 * @param nextQuad
 	 */
-	// 元布尔值=id@test.syntax.action.ExpAction.e11
+	// 元布尔值=id@mainsyntax.action.ExpAction.e11
 	public void e13(V left, V[] right){
 		String name = (String) right[0].attr("value");
 		Symbol s = st.lookup(name);
