@@ -12,8 +12,8 @@ import syntax.SymbolTable;
  * }
  */
 public class SemanticAction {
-	protected SymbolTable st;															//符号表
-	private List<Quad> qlist;															//四元式队列
+	protected SymbolTable st;															// 符号表
+	private List<Quad> qlist;															// 四元式队列
 	protected final Quad newQuad() {
 		Quad q = new Quad();
 		q.num = Quad.STARTNUM + qlist.size();
@@ -26,9 +26,18 @@ public class SemanticAction {
 	public final void setQlist(List<Quad> qlist) {
 	    this.qlist = qlist;
     }
+	/**
+	 * 根据四元式编号返回四元式
+	 * @param num
+	 * @return
+	 */
 	public final Quad getQuad(int num){
 		return qlist.get(num - Quad.STARTNUM);
 	}
+	/**
+	 * 获得下一条四元式的编号
+	 * @return
+	 */
 	public final int nextQuad(){
 		return qlist.size() + Quad.STARTNUM;
 	}

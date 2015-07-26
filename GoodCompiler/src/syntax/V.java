@@ -3,7 +3,7 @@ package syntax;
 import java.util.HashMap;
 import java.util.Map;
 /**
- * 符号类</br>
+ * 文法符号类</br>
  * 每一个符号具有名字和自己的一些属性
  * @author lxm
  *

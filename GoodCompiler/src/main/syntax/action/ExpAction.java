@@ -1,6 +1,7 @@
-package test.syntax.action;
+package main.syntax.action;
 
 import syntax.Quad;
+import syntax.Symbol;
 import syntax.V;
 import syntax.action.SemanticAction;
 /**
@@ -101,6 +102,25 @@ public class ExpAction extends SemanticAction{
 	 * @param head
 	 * @param nextQuad
 	 */
+	// 元布尔值=id@test.syntax.action.ExpAction.e11
+	public void e13(V left, V[] right){
+		String name = (String) right[0].attr("value");
+		Symbol s = st.lookup(name);
+		if(s == null){
+			throw new RuntimeException("Symbol undefined: " + name);
+		} else {
+			if(s.attr("type").equals(ValueAction.BOOL)){
+				Quad q = newQuad();
+				q.field("jnz",s);
+				left.attr("TC", q.num);
+				q = newQuad();
+				q.field("j");
+				left.attr("FC", q.num);
+			} else {
+				throw new RuntimeException("Symbol is not a boolean: " + name);
+			}
+		}
+	}
 	private void backPatch(Integer head, int nextQuad) {
 		while(head != null && head >= Quad.STARTNUM){
 			Quad q = getQuad(head);

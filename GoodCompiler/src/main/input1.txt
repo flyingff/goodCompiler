@@ -1,9 +1,9 @@
-int _adssssdds333443sasdsjdkhgkjtgyu547futfr5g5h89, x, y[4,2 ,1];
+int _adssssd, x, y[4,2 ,1];
 real _0zz [3, 2];
 char q;
 bool qz[2];
 int a[3,4, 5];
-int q(int n){
+int f1(int n){
 	int x[3];
 	while(q <> 2){
 		if(q < 1) {
@@ -15,16 +15,16 @@ int q(int n){
 	}
 	int a2;
 	a2++;
-	
 	return (2 + 5.4) * (3 * 5.3 ) * (4 + 3);
 }
-q(a);
+f1(a);
 a[1,5 + 2, 3]:= 3 + 2 + 6 * 3;
 q := a[2,2,4];
-real func(int pp){
+real f2(int pp){
 bool cc, qq,bb;
 int vh, _2f;
 	while(true){
 		cc := pp;
 	} 
+	return 3;
 }  

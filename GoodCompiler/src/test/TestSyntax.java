@@ -20,7 +20,7 @@ public class TestSyntax {
 	public static void main(String[] args) throws Exception{
 		boolean wordChanged = false;
 		boolean grammaChanged = true;
-		// generate
+		// 自动机和分析表的输入路径
 		String automatPath = "d:\\syntaxtest.automat", atablePath = "d:\\syntaxtest.atable";
 		if (wordChanged) {
 			TableReader ta = new TableReader(TestSyntax.class.getResourceAsStream("wordlist.properties"));
@@ -32,10 +32,13 @@ public class TestSyntax {
 			//System.out.println("BNF Grammar:");
 			//System.out.print(ga.getBNFGrammar());
 		}
-		// start analyze
+		// 开始分析
 		LexicalAnalyzer la;
+		// 加载自动机
         la = new LexicalAnalyzerImpl(new FileInputStream(automatPath));
-        la.load(LexicalTest.class.getResourceAsStream("input6.txt"));
+        // 加载输入文件
+        la.load(LexicalTest.class.getResourceAsStream("input7.txt"));
+        // 提示出错位置等信息
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
         	@Override
         	public void uncaughtException(Thread arg0, Throwable e) {

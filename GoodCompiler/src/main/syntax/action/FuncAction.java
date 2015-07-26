@@ -1,4 +1,4 @@
-package test.syntax.action;
+package main.syntax.action;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,11 @@ import syntax.Quad;
 import syntax.Symbol;
 import syntax.V;
 import syntax.action.SemanticAction;
-
+/**
+ * 函数定义语句的语义动作
+ * @author lxm
+ *
+ */
 public class FuncAction extends SemanticAction {
 	// 函数声明语句=函数头,{,局部语句组或空@test.syntax.action.FuncAction.f1
 	public void f1(V left, V[] right) {
@@ -81,15 +85,15 @@ public class FuncAction extends SemanticAction {
 		String ret = (String) right[0].attr("ret");
 		if(ret !=null){
 			left.attr("ret", ret);
-		} else {
-			throw new RuntimeException("Need a return statement...");
 		}
 	}
 	
 	// 局部语句组=局部语句组,局部语句@test.syntax.action.FuncAction.f8
 	public void f8(V left, V[] right) {
 		if(right[1].attr("exe") != null) {
-			backPatch((Integer)right[0].attr("chain"), (Integer)right[0].attr("nextq"));
+			if(right[0].attr("nextq") != null){
+				backPatch((Integer)right[0].attr("chain"), (Integer)right[0].attr("nextq"));
+			}
 			left.attr("chain", right[1].attr("chain"));
 		} else {
 			left.attr("chain", right[0].attr("chain"));

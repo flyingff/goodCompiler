@@ -39,28 +39,33 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 	public LexicalAnalyzerImpl(InputStream is) {
 		dfa = DFAAutomat.load(is);
 	}
+	/**
+	 * 获得输入字符流
+	 */
 	@Override
 	public void load(InputStream is) {
 		 br = new BufferedReader(new InputStreamReader(is));
 	}
-
+	/**
+	 * 返回一个单词符号
+	 */
 	@Override
 	public V next() {
-		if(br == null){	throw new RuntimeException("please load file first !");	}		//读取文件失败
+		if(br == null){	throw new RuntimeException("please load file first !");	}		// 读取文件失败
 		
 		V v = new V();
 		//boolean isOver = false;
 		
-		sb.setLength(0);																//清空字符串缓冲区
-		dfa.reset();																	//重置DFA
+		sb.setLength(0);																// 清空字符串缓冲区
+		dfa.reset();																	// 重置DFA
 		
-		State curr = null;																//记录当前状态
-		State pre = null;																//记录前一状态
+		State curr = null;																//  记录当前状态
+		State pre = null;																// 记录前一状态
 		
 		try {
-			// find a non-blank char
+			// 找到非空字符
 			char r = getChar();
-			while(BLANKCH.contains(r)) {												//找到非空字符
+			while(BLANKCH.contains(r)) {												
 				if(r == '\n') {
 					line++;
 					col = 1;
@@ -100,6 +105,7 @@ public class LexicalAnalyzerImpl implements LexicalAnalyzer {
 		}
 		return v;
 	}
+	
 	/**
 	 * 读取一个字符
 	 * @return ch

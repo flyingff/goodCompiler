@@ -1,4 +1,4 @@
-package test.syntax.action;
+package main.syntax.action;
 
 import syntax.Quad;
 import syntax.V;

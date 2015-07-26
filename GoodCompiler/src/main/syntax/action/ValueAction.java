@@ -1,4 +1,4 @@
-package test.syntax.action;
+package main.syntax.action;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import syntax.action.SemanticAction;
 /**
  * 值的属性为: value - Integer, Double或Symbol, 代表当前符号的值<br>
  * 如果是数组左值，则附带属性为offset<br>
- * type - String,可能为{@link test.syntax.action.ValueAction}.INT, REAL, CHAR, BOOL
+ * type - String,可能为{@link main.syntax.action.ValueAction}.INT, REAL, CHAR, BOOL
  * @author lxm
  */
 public class ValueAction extends SemanticAction{
@@ -39,16 +39,11 @@ public class ValueAction extends SemanticAction{
 	// 加值=乘积值@test.syntax.action.ValueAction.pass
 	// 乘积值=自增值@test.syntax.action.ValueAction.pass
 	// 自增值=元值@test.syntax.action.ValueAction.pass
-	// 元值=函数调用@test.syntax.action.ValueAction.pass
 	// 数组访问参数=值@test.syntax.action.ValueAction.pass
+	// 元值=函数调用@test.syntax.action.ValueAction.pass
 	public void pass(V left, V[] right){
 		left.attr("value", right[0].attr("value"));
 		left.attr("type", right[0].attr("type"));
-	}
-	// 元值=函数调用@test.syntax.action.ValueAction.a4
-	public void a4(V left, V[] right){
-		Symbol func = (Symbol)right[0].attr("func");
-		
 	}
 	// 元值 = 左值@test.syntax.action.ValueAction.a5
 	public void a5(V left, V[] right){
@@ -232,11 +227,15 @@ public class ValueAction extends SemanticAction{
 			for(Object ox : paras){
 				Quad qx = newQuad();
 				qx.field("par", null, null, ox);
-				st.releaseTemp((Symbol)ox);
+				st.releaseTemp(ox);
 			}
 		}
 		newQuad().field("call", null, null, func + "@" + func.attr("addr"));
 		left.attr("func", func);
+		left.attr("type", func.attr("type"));
+		Symbol temp = st.getTemp();
+		newQuad().field("getRetValue", null, null, temp);
+		left.attr("value", temp);
 	}
 	// 实参列表=实参@test.syntax.action.ValueAction.a17
 	public void a17(V left, V[] right){

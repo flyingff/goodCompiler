@@ -14,7 +14,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
-
+/**
+ * 语法分析类</br>
+ * 得到SLR(1)分析表
+ * @author lxm
+ *
+ */
 public class GrammarAnalyser {
 	public static final String EPSLON = "_", TERMINATOR = "#", START = "S";
 	private Properties p;
@@ -34,6 +39,7 @@ public class GrammarAnalyser {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		// 提取产生式集合
 		for(Entry<Object, Object> x : p.entrySet()){									// 遍历属性表
 			Set<Production> xset = new HashSet<Production>();
 			String left = ((String) x.getKey()).trim();									// 得到产生式的左部
@@ -45,7 +51,7 @@ public class GrammarAnalyser {
 				if(str.length == 1){
 					p.setAction(null);
 				} else if(str.length == 2){
-					p.setAction(str[1].trim());												// 设置产生式的动作路径
+					p.setAction(str[1].trim());											// 设置产生式的动作路径
 				} else {
 					throw new RuntimeException("Incorrect number of @: " + ss[i]);
 				}
@@ -61,14 +67,11 @@ public class GrammarAnalyser {
 				xset.add(p);								
 			 }
 			 map.put(left, xset);
-			//   vset.remove(EPSLON);
 		}
-		//  System.out.println(map.toString());
 		Set<Item> sItems = getItemSet(map);
 		//System.out.println(sItems.toString());
 		//System.out.println("文法符号:\n" + vset.toString());
 		//System.out.println("非终结符集:\n" + vnset.toString());
-		//Map<Group, Integer> mGotos = 
 		automat(sItems);
 		//System.out.println("GOTO表:\n" +  mGotos.toString());
 		getFirstSet(map);
@@ -82,6 +85,10 @@ public class GrammarAnalyser {
 		at.setVT(vt);
 		//System.out.println(getBNFGrammar());
 	}
+	/**
+	 * 得到BNF范式文法
+	 * @return
+	 */
 	public String getBNFGrammar(){
 		StringBuilder sb = new StringBuilder();
 		List<BNFRecord> outList = new ArrayList<>();
@@ -109,6 +116,13 @@ public class GrammarAnalyser {
 		}
 		return sb.toString();
 	}
+	/**
+	 * 深度优先遍历BNF列表
+	 * @param outList
+	 * @param remaining
+	 * @param curr
+	 * @param w
+	 */
 	private void dfsSearch(List<BNFRecord> outList, Set<String> remaining, String curr, int w) {
 		outList.add(new BNFRecord(curr, w));
 		remaining.remove(curr);
@@ -126,7 +140,7 @@ public class GrammarAnalyser {
 	
 	public static void main(String[] args) throws IOException{
 		String savePath = "e:\\table1.atab";
-		AnalyzeTable at = new GrammarAnalyser(GrammarAnalyser.class.getResourceAsStream("gramma.properties")).getAnalyzeTable();
+		AnalyzeTable at = new GrammarAnalyser(GrammarAnalyser.class.getResourceAsStream("/test/grammar.properties")).getAnalyzeTable();
 		at.show();
 		at.save(new FileOutputStream(savePath));
 		System.out.println("File saved at '" + savePath + "'.");
@@ -142,8 +156,9 @@ public class GrammarAnalyser {
 		for(Entry<String, Set<Production>> ex : map.entrySet()){
 			for(Production px : ex.getValue()){
 				int pos = 0;
-				int len = px.getRight().length;											// 得到相同左部的右部总数
-				Item last = null;														
+				int len = px.getRight().length;											// 得到右部长度
+				Item last = null;
+				// 产生项目
 				while(pos < len + 1){
 					Item ps = new Item();
 					ps.setDotPos(pos);
@@ -373,8 +388,8 @@ public class GrammarAnalyser {
 	 */
 	private void tablePut(Map<Group, Action> table, Group g, Action a){
 		Action ax = table.get(g);
-		if (ax != null && !ax.equals(a)) {													// 若已存在一条转移记录,则发生冲突
-			System.err.println("WARNING: CONFLICT on input " + g.getVia());					// 出错
+		if (ax != null && !ax.equals(a)) {												// 若已存在一条转移记录,则发生冲突
+			System.err.println("WARNING: CONFLICT on input " + g.getVia());				// 出错
 			System.err.println("Existing: " + table.get(g));
 			System.err.println("Want to insert: " + a);
 			System.err.println("Position:" + g);
@@ -547,10 +562,14 @@ class Item implements Serializable {
 		return pd.hashCode() << 4 + dotPos;
 	}
 }
-
+/**
+ * BNF记录
+ * @author lxm
+ *
+ */
 class BNFRecord{
-	public String vn;
-	public int w;
+	public String vn;																// 非终结符
+	public int w;																	// 深度
 	public BNFRecord(String vn, int w) {
 		this.vn = vn;
 		this.w = w;

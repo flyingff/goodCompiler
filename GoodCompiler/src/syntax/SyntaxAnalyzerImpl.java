@@ -24,10 +24,10 @@ import syntax.action.SemanticAction;
  *
  */
 public class SyntaxAnalyzerImpl implements SyntaxAnalyzer {
-	private AnalyzeTable at;															// 语法分析表
+	private AnalyzeTable at;															// SLR(1)分析表
 	private LexicalAnalyzer la;															// 词法分析器
 	private SymbolTable st = new SymbolTable();											// 符号表
-	private Stack<Integer> sstate = new Stack<Integer>();								// 栈,存放状态
+	private Stack<Integer> sstate = new Stack<Integer>();								// 状态栈
 	private Stack<V> ssymbol = new Stack<>();											// 符号栈
 	private List<Quad> quadlist = new ArrayList<>();									// 生成的四元式队列
 	private Map<String, SemanticAction> saObjs = new HashMap<>();						// 语义动作映射

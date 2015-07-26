@@ -32,48 +32,7 @@ public class SymbolTable {
 		}
 		return syms.get(name);
 	}
-	/**
-	 * 为变量分配地址空间
-	 * @param s
-	 * @param type
-	 * @param num
-	 * @param isTemp
-	 * @return
-	 */
-	/*public Symbol allocateAddr(Symbol s, boolean isTemp){
-		if(!isTemp) {
-			s.attr("startAddr", startAddr);
-			int num = 1;
-			@SuppressWarnings("unchecked")
-            List<Integer> dim = (List<Integer>)s.attr("dim");
-			if(dim != null){
-				for(Integer ix : dim){
-					num *= ix;
-				}
-			}
-			switch((String)s.attr("type")) {
-				case "int":
-					s.attr("size", INTSIZE * num);
-					startAddr += 2 * num; 
-				break;
-				case "char":
-				case "bool":
-					s.attr("size", CHARSIZE * num);
-					startAddr += 1 * num; 
-				break;
-				case "real":
-					s.attr("size", REALZISE * num);
-					startAddr += 4 * num; 
-				break;
-				default:
-					throw new RuntimeException("wrong type of symbol: " + s.name + " type :" + s.attr("type"));
-			}
-		}else {
-			// **************************************************************************888
-			// 不知道临时变量的空间怎么分配...
-		}
-		return s;
-	}*/
+	
 	/**
 	 * 仅在当前局部符号表中查看符号是否存在</br>
 	 * 返回符号的信息
@@ -176,7 +135,12 @@ public class SymbolTable {
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
+		sb.append("Global variables: \n");
 		for(Symbol sx : syms.values()) {
+			sb.append("\t").append(sx.details()).append("\n");
+		}
+		sb.append("Temporary variables:\n");
+		for(Symbol sx : pool){
 			sb.append("\t").append(sx.details()).append("\n");
 		}
 		sb.append("Functions:\n");
@@ -250,10 +214,6 @@ public class SymbolTable {
 }
 
 class TempSymbol extends Symbol{
-	@Override
-	public void attr(String name, Object o) {
-		throw new RuntimeException("Cannot put attribute into TEMP variable.");
-	}
 	@Override
 	public String toString() {
 		return "$" + name;

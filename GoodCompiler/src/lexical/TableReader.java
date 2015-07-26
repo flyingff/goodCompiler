@@ -52,16 +52,16 @@ public class TableReader {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		Stack<Character> sop = new Stack<Character>();									//操作符栈
-		Stack<SubMat> snum = new Stack<SubMat>();										//操作数栈
-		NFAConstructor c = DFAAutomat.constructorN();									//构造NFA
+		Stack<Character> sop = new Stack<Character>();									// 操作符栈
+		Stack<SubMat> snum = new Stack<SubMat>();										// 操作数栈
+		NFAConstructor c = DFAAutomat.constructorN();									// 构造NFA
 		State s = new State();
 		c.begin(s);
-		for(Entry<Object, Object> ex : p.entrySet()) {									//解析文件中的每一条记录
-			String key = (String) ex.getKey();											//得到正规式
+		for(Entry<Object, Object> ex : p.entrySet()) {									// 解析文件中的每一条记录
+			String key = (String) ex.getKey();											// 得到正规式
 			int len = key.length();
 			for(int i = 0; i < len; i++) {
-				char chx = key.charAt(i);												//提取正规式的每一个符号
+				char chx = key.charAt(i);												// 提取正规式的每一个符号
 				switch (chx) {
 				case '(':
 				case ')':

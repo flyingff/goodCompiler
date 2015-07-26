@@ -1,4 +1,4 @@
-package test.syntax.action;
+package main.syntax.action;
 
 import java.util.ArrayList;
 import java.util.List;

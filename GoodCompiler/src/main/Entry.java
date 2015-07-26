@@ -1,38 +1,68 @@
 package main;
 
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.PrintStream;
-import java.util.List;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.lang.Thread.UncaughtExceptionHandler;
 
+import language.GrammarAnalyser;
 import lexical.LexicalAnalyzer;
 import lexical.LexicalAnalyzerImpl;
+import lexical.TableReader;
 import syntax.Quad;
 import syntax.SyntaxAnalyzer;
 import syntax.SyntaxAnalyzerImpl;
 
 public class Entry {
 	public static void main(String[] args) throws Exception{
-		// construct lexical analyzer from an existing Auto-mat
-		LexicalAnalyzer la = new LexicalAnalyzerImpl(new FileInputStream(""));
-		
-		// load input file
-		la.load(Entry.class.getResourceAsStream("input.txt"));
-		
-		// construct syntax analyzer from an existing SLR(1) analyze table 
-		SyntaxAnalyzer sa = new SyntaxAnalyzerImpl(new FileInputStream(""));
-		
-		// associate lexical analyzer into syntax analyzer
-		sa.setInput(la);
-		
-		// use syntax analyzer to produce a list of quad
-		List<Quad> list = sa.analyse();
-		
-		// print quadruples to both screen and a file
-		PrintStream ps = new PrintStream("d:\\output.txt");
-		for(Quad qx : list) {
-			System.out.println(qx);
-			ps.println(qx);
+		boolean wordChanged = false;
+		boolean grammaChanged = true;
+		// 自动机和分析表的输入路径
+		String automatPath = "d:\\syntaxtest.automat", atablePath = "d:\\syntaxtest.atable";
+		if (wordChanged) {
+			TableReader ta = new TableReader(Entry.class.getResourceAsStream("wordlist.properties"));
+			ta.getMat().saveTo(new FileOutputStream(automatPath));
 		}
-		ps.close();
-	}
+		if (grammaChanged) {
+			GrammarAnalyser ga = new GrammarAnalyser(Entry.class.getResourceAsStream("grammar.properties"));
+			ga.getAnalyzeTable().save(new FileOutputStream(atablePath));
+			//System.out.println("BNF Grammar:");
+			//System.out.print(ga.getBNFGrammar());
+		}
+		// 开始分析
+		LexicalAnalyzer la;
+		// 加载自动机
+        la = new LexicalAnalyzerImpl(new FileInputStream(automatPath));
+        // 加载输入文件
+        la.load(Entry.class.getResourceAsStream("input3.txt"));
+        // 提示出错位置等信息
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+        	@Override
+        	public void uncaughtException(Thread arg0, Throwable e) {
+        		Throwable t = e;
+        		while(t.getCause() != null) t = t.getCause();
+        		
+        		if (t instanceof RuntimeException) {
+        			System.err.println("Error at line " + la.getLine() + ", col " + (la.getCol() - 1));
+        			System.err.println(t.getMessage());
+        		}
+        		t.printStackTrace();
+        	}
+        });
+        SyntaxAnalyzer sa = new SyntaxAnalyzerImpl(new FileInputStream(atablePath));
+        sa.setInput(la);
+        sa.analyse();
+        File output = new File("d:\\output.txt");
+        PrintWriter pw = new PrintWriter(output);
+        System.out.println("\nQuad list:");
+        for(Quad qx : sa.getQuad()) {
+        	System.out.println(qx.toString());
+        	pw.println(qx.toString());
+        }
+        System.out.println("\nSymbol Table:");
+        pw.println(sa.getSymbolTable().toString());
+        pw.close();
+        System.out.println(sa.getSymbolTable());
+    }
 }

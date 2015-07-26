@@ -1,9 +1,13 @@
-package test.syntax.action;
+package main.syntax.action;
 
 import syntax.Quad;
 import syntax.V;
 import syntax.action.SemanticAction;
-
+/**
+ * 定义全局语句执行的语义动作
+ * @author lxm
+ *
+ */
 public class GlobalAction extends SemanticAction {
 	// S=语句组@test.syntax.action.GlobalAction.a1
 	public void a1(V left, V[] right) {

@@ -131,12 +131,20 @@ public class DFAAutomat implements Serializable{
 		public void edge(State from, char via, State to){
 			map.put(new Group(from, via), to);
 		}
+		/**
+		 * 得到终态集
+		 * @param s
+		 */
 		public void finals(State... s) {
 			finals.addAll(Arrays.asList(s));
 		}
 		public void begin(State s) {
 			begin = s;
 		}
+		/**
+		 * 构造DFA
+		 * @return
+		 */
 		public DFAAutomat finish(){
 			return new DFAAutomat(begin, map, finals);
 		}
@@ -192,13 +200,13 @@ public class DFAAutomat implements Serializable{
 		 * @return
 		 */
 		public DFAAutomat finish(){
-			State begin0 = null;
-			Map<Group, State> map0 = new HashMap<Group, State>();
-			Set<State> finals0 = new HashSet<State>();
-			Map<Set<State>,Integer> clMap = new HashMap<Set<State>,Integer>();
+			State begin0 = null;																// DFA的初始状态
+			Map<Group, State> map0 = new HashMap<Group, State>();								// 状态转换集合
+			Set<State> finals0 = new HashSet<State>();											// DFA的终态集
+			Map<Set<State>,Integer> clMap = new HashMap<Set<State>,Integer>();					// 状态集对应编号
 			Set<State> s = new HashSet<State>();
 			s.addAll(begin);
-			List<State> sl = new ArrayList<State>();
+			List<State> sl = new ArrayList<State>();											// 为状态重新编号
 			Set<State> bg = closure(s);
 			clMap.put(bg, 0);
 			sl.add(new State());
@@ -243,16 +251,23 @@ public class DFAAutomat implements Serializable{
 		private Set<State> closure(Set<State> set){
 			return closure(set, EPSLON);
 		}
+		/**
+		 * 计算相同输入字符的状态集的闭包
+		 * @param set
+		 * @param ch
+		 * @return
+		 */
 		private Set<State> closure(Set<State> set, char ch) {
-			Set<State> ret = new HashSet<State>();
-			Set<State> tmp = new HashSet<State>();
+			Set<State> ret = new HashSet<State>();													// 当前状态集
+			Set<State> tmp = new HashSet<State>();	
+			// 计算输入字符的闭包
 			for(State sx : set) {
 				Set<State> snext;
 				if ((snext = map.get(Group.getComparer(sx, ch))) != null) {
 					ret.addAll(snext);
 				}
 			}
-			//  calculate epslon closure
+			//  计算EPSLON闭包
 			boolean change = true;
 			while(change) {
 				change = false;
@@ -272,7 +287,7 @@ public class DFAAutomat implements Serializable{
 
 /**
  * Group类
- * 记录前一状态和输入字符
+ * 记录当前状态和输入字符
  * @author lxm
  *
  */
