@@ -198,7 +198,7 @@ public class ValueAction extends SemanticAction{
 		
 		@SuppressWarnings("unchecked")
 		List<Integer> dim = ((List<Integer>)s.attr("dim"));
-		if(dim.size() < currdim) {
+		if(dim.size() != currdim) {
 			throw new RuntimeException("Array Dimension out of range at " + s + ": " + currdim);
 		}
 		if (REAL.equals(right[2].attr("type"))) throw new RuntimeException("Array dimension cannot be a real number:" + dimx);
