@@ -14,7 +14,7 @@ while (a < 10){
 }
 int func1(bool b, char ch){
 	int temp;
-	while((b == 0) && (2 <> (b := 2))){
+	while(b == 0){
 		if(a == 11){
 			temp := 9;
 			a := temp + a;
