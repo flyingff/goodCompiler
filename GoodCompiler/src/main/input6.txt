@@ -1,11 +1,2 @@
-int q, f,dd;
-char c, charq, sdd;
-real r, rr, tt;
-bool ddt, qq,cc;
-rr := 111;
-
- int a(int ss, real pp)
- {return q;}
-f := q;
-
-tt := a(f, rr);
+int a;
+a := 0;

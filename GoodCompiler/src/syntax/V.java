@@ -11,17 +11,20 @@ import java.util.Map;
 public class V {
 	public String name;																// 符号名	
 	public boolean isFinal = true;													// 是否为终结符
-	private final Map<String, Object> attr = new HashMap<String, Object>();			// 属性集合
+	protected Map<String, Object> attr = null;										// 属性集合
+	public V() {
+		attr = new HashMap<String, Object>();
+	}
 	/**
 	 * 新增一个属性
 	 * @param name
 	 * @param val
 	 */
-	public void attr(String name, Object val){ attr.put(name, val); }	
+	public final void attr(String name, Object val){ attr.put(name, val); }	
 	/**
 	 * 由属性名获得属性值
 	 * @param name
 	 * @return
 	 */
-	public Object attr(String name){ return attr.get(name);}						
+	public final Object attr(String name){ return attr.get(name);}						
 }

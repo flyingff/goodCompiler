@@ -35,7 +35,7 @@ public class Entry {
 		// 加载自动机
         la = new LexicalAnalyzerImpl(new FileInputStream(automatPath));
         // 加载输入文件
-        la.load(Entry.class.getResourceAsStream("input3.txt"));
+        la.load(Entry.class.getResourceAsStream("input6.txt"));
         // 提示出错位置等信息
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
         	@Override
