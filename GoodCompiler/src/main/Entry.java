@@ -17,7 +17,7 @@ import syntax.SyntaxAnalyzerImpl;
 public class Entry {
 	public static void main(String[] args) throws Exception{
 		boolean wordChanged = false;
-		boolean grammaChanged = true;
+		boolean grammaChanged = false;
 		// 自动机和分析表的输入路径
 		String automatPath = "d:\\syntaxtest.automat", atablePath = "d:\\syntaxtest.atable";
 		if (wordChanged) {

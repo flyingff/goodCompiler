@@ -23,8 +23,8 @@ import dfaautomat.State;
  */
 public class TableReader {
 	private DFAAutomat mat;												
-	private Properties p;																//读取可识别的单词列表
-	private int priority(char ch){														//定义单词的优先级
+	private Properties p;																// 读取可识别的单词列表
+	private int priority(char ch){														// 定义单词的优先级
 		switch(ch) {
 		case ')':
 			return 1;
